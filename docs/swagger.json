@@ -1,0 +1,477 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Smart-Service-Repository API",
+        "contact": {},
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "0.1"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/bulk": {
+            "post": {
+                "description": "bulk write of variables and read of values",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bulk"
+                ],
+                "summary": "bulk write of variables and read of values",
+                "parameters": [
+                    {
+                        "description": "model.BulkRequest; 'get' contains a list of value keys; 'set' contains a list of model.Variable",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BulkRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.BulkResponse"
+                        }
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/process-definitions/{definitionId}/process-instances/{instanceId}/values/{key}": {
+            "put": {
+                "description": "set the value associated with the given key",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "values",
+                    "process-definitions",
+                    "process-instances"
+                ],
+                "summary": "set the value associated with the given key",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key of value",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "definitionId associated with value",
+                        "name": "definitionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "instanceId associated with value",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Anything",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/process-definitions/{definitionId}/values/{key}": {
+            "put": {
+                "description": "set the value associated with the given key",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "values",
+                    "process-definitions"
+                ],
+                "summary": "set the value associated with the given key",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key of value",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "definitionId associated with value",
+                        "name": "definitionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Anything",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/values/{key}": {
+            "get": {
+                "description": "returns the value associated with the given key",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "values"
+                ],
+                "summary": "returns the value associated with the given key",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key of value",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {}
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "description": "set the value associated with the given key",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "values"
+                ],
+                "summary": "set the value associated with the given key",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key of value",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Anything",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "description": "delete the value associated with the given key",
+                "tags": [
+                    "values"
+                ],
+                "summary": "delete the value associated with the given key",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key of value",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/variables": {
+            "get": {
+                "description": "returns a list of variables",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "variables"
+                ],
+                "summary": "returns a list of variables",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "limits size of result; 0 means unlimited",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "offset to be used in combination with limit",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "describes the sorting in the form of key.asc",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter by process instance id",
+                        "name": "process_instance_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter by process definition id",
+                        "name": "process_definition_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.VariableWithUnixTimestamp"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/variables/{key}": {
+            "get": {
+                "description": "returns the variable associated with the given key",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "variables"
+                ],
+                "summary": "returns the variable associated with the given key",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key of variable/value",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.VariableWithUnixTimestamp"
+                        }
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "description": "set the variable associated with the given key",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "variables"
+                ],
+                "summary": "set the variable associated with the given key",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key of variable/value",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "model.Variable",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Variable"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "description": "delete the variables associated with the given key",
+                "tags": [
+                    "variables"
+                ],
+                "summary": "delete the variables associated with the given key",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key of variable/value",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.BulkRequest": {
+            "type": "object",
+            "properties": {
+                "get": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "set": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Variable"
+                    }
+                }
+            }
+        },
+        "model.BulkResponse": {
+            "type": "object",
+            "additionalProperties": true
+        },
+        "model.Variable": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "process_definition_id": {
+                    "type": "string"
+                },
+                "process_instance_id": {
+                    "type": "string"
+                },
+                "value": {}
+            }
+        },
+        "model.VariableWithUnixTimestamp": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "process_definition_id": {
+                    "type": "string"
+                },
+                "process_instance_id": {
+                    "type": "string"
+                },
+                "unix_timestamp_in_s": {
+                    "type": "integer"
+                },
+                "value": {}
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

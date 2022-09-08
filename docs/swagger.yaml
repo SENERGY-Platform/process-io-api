@@ -1,0 +1,320 @@
+basePath: /
+definitions:
+  model.BulkRequest:
+    properties:
+      get:
+        items:
+          type: string
+        type: array
+      set:
+        items:
+          $ref: '#/definitions/model.Variable'
+        type: array
+    type: object
+  model.BulkResponse:
+    additionalProperties: true
+    type: object
+  model.Variable:
+    properties:
+      key:
+        type: string
+      process_definition_id:
+        type: string
+      process_instance_id:
+        type: string
+      value: {}
+    type: object
+  model.VariableWithUnixTimestamp:
+    properties:
+      key:
+        type: string
+      process_definition_id:
+        type: string
+      process_instance_id:
+        type: string
+      unix_timestamp_in_s:
+        type: integer
+      value: {}
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Smart-Service-Repository API
+  version: "0.1"
+paths:
+  /bulk:
+    post:
+      consumes:
+      - application/json
+      description: bulk write of variables and read of values
+      parameters:
+      - description: model.BulkRequest; 'get' contains a list of value keys; 'set'
+          contains a list of model.Variable
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/model.BulkRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.BulkResponse'
+        "500":
+          description: ""
+      summary: bulk write of variables and read of values
+      tags:
+      - bulk
+  /process-definitions/{definitionId}/process-instances/{instanceId}/values/{key}:
+    put:
+      consumes:
+      - application/json
+      description: set the value associated with the given key
+      parameters:
+      - description: key of value
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: definitionId associated with value
+        in: path
+        name: definitionId
+        required: true
+        type: string
+      - description: instanceId associated with value
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      - description: Anything
+        in: body
+        name: message
+        required: true
+        schema: {}
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: set the value associated with the given key
+      tags:
+      - values
+      - process-definitions
+      - process-instances
+  /process-definitions/{definitionId}/values/{key}:
+    put:
+      consumes:
+      - application/json
+      description: set the value associated with the given key
+      parameters:
+      - description: key of value
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: definitionId associated with value
+        in: path
+        name: definitionId
+        required: true
+        type: string
+      - description: Anything
+        in: body
+        name: message
+        required: true
+        schema: {}
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: set the value associated with the given key
+      tags:
+      - values
+      - process-definitions
+  /values/{key}:
+    delete:
+      description: delete the value associated with the given key
+      parameters:
+      - description: key of value
+        in: path
+        name: key
+        required: true
+        type: string
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: delete the value associated with the given key
+      tags:
+      - values
+    get:
+      description: returns the value associated with the given key
+      parameters:
+      - description: key of value
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema: {}
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: returns the value associated with the given key
+      tags:
+      - values
+    put:
+      consumes:
+      - application/json
+      description: set the value associated with the given key
+      parameters:
+      - description: key of value
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: Anything
+        in: body
+        name: message
+        required: true
+        schema: {}
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: set the value associated with the given key
+      tags:
+      - values
+  /variables:
+    get:
+      description: returns a list of variables
+      parameters:
+      - description: limits size of result; 0 means unlimited
+        in: query
+        name: limit
+        type: integer
+      - description: offset to be used in combination with limit
+        in: query
+        name: offset
+        type: integer
+      - description: describes the sorting in the form of key.asc
+        in: query
+        name: sort
+        type: string
+      - description: filter by process instance id
+        in: query
+        name: process_instance_id
+        type: string
+      - description: filter by process definition id
+        in: query
+        name: process_definition_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.VariableWithUnixTimestamp'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: returns a list of variables
+      tags:
+      - variables
+  /variables/{key}:
+    delete:
+      description: delete the variables associated with the given key
+      parameters:
+      - description: key of variable/value
+        in: path
+        name: key
+        required: true
+        type: string
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: delete the variables associated with the given key
+      tags:
+      - variables
+    get:
+      description: returns the variable associated with the given key
+      parameters:
+      - description: key of variable/value
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.VariableWithUnixTimestamp'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: returns the variable associated with the given key
+      tags:
+      - variables
+    put:
+      consumes:
+      - application/json
+      description: set the variable associated with the given key
+      parameters:
+      - description: key of variable/value
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: model.Variable
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/model.Variable'
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: set the variable associated with the given key
+      tags:
+      - variables
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
