@@ -28,6 +28,11 @@ type VariableWithUnixTimestamp struct {
 	UnixTimestampInS int64 `json:"unix_timestamp_in_s"`
 }
 
+type VariableWithUser struct {
+	VariableWithUnixTimestamp
+	UserId string `json:"user_id"`
+}
+
 type VariablesQueryOptions struct {
 	Limit               int
 	Offset              int
@@ -41,4 +46,4 @@ type BulkRequest struct {
 	Set []Variable `json:"set"`
 }
 
-type BulkResponse = map[string]interface{}
+type BulkResponse = []VariableWithUnixTimestamp

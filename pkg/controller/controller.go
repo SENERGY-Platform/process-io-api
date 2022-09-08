@@ -20,37 +20,62 @@ import (
 	"process-io-api/pkg/auth"
 	"process-io-api/pkg/configuration"
 	"process-io-api/pkg/model"
+	"time"
 )
 
-func New(config configuration.Config) *Controller {
-	return &Controller{config: config}
+type Database interface {
+	GetVariable(userId string, key string) (model.VariableWithUser, error)
+	SetVariable(variable model.VariableWithUser) error
+	DeleteVariable(userId string, key string) error
+	ListVariables(userId string, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error)
+}
+
+func New(config configuration.Config, db Database) *Controller {
+	return &Controller{config: config, db: db}
 }
 
 type Controller struct {
 	config configuration.Config
+	db     Database
 }
 
 func (this *Controller) List(token auth.Token, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error) {
-	//TODO implement me
-	panic("implement me")
+	return this.db.ListVariables(token.GetUserId(), query)
 }
 
 func (this *Controller) Get(token auth.Token, key string) (model.VariableWithUnixTimestamp, error) {
-	//TODO implement me
-	panic("implement me")
+	variable, err := this.db.GetVariable(token.GetUserId(), key)
+	return variable.VariableWithUnixTimestamp, err
 }
 
 func (this *Controller) Set(token auth.Token, variable model.Variable) error {
-	//TODO implement me
-	panic("implement me")
+	return this.db.SetVariable(model.VariableWithUser{
+		VariableWithUnixTimestamp: model.VariableWithUnixTimestamp{
+			Variable:         variable,
+			UnixTimestampInS: time.Now().Unix(),
+		},
+		UserId: token.GetUserId(),
+	})
 }
 
 func (this *Controller) Delete(token auth.Token, key string) error {
-	//TODO implement me
-	panic("implement me")
+	return this.db.DeleteVariable(token.GetUserId(), key)
 }
 
-func (this *Controller) Bulk(token auth.Token, bulk model.BulkRequest) (model.BulkResponse, error) {
-	//TODO implement me
-	panic("implement me")
+func (this *Controller) Bulk(token auth.Token, bulk model.BulkRequest) (result model.BulkResponse, err error) {
+	for _, variable := range bulk.Set {
+		err = this.Set(token, variable)
+		if err != nil {
+			return result, err
+		}
+	}
+	for _, key := range bulk.Get {
+		var variable model.VariableWithUnixTimestamp
+		variable, err = this.Get(token, key)
+		if err != nil {
+			return result, err
+		}
+		result = append(result, variable)
+	}
+	return result, nil
 }

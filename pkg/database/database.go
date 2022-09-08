@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-package pkg
+package database
 
 import (
 	"context"
-	"process-io-api/pkg/api"
+	"errors"
 	"process-io-api/pkg/configuration"
-	"process-io-api/pkg/controller"
-	"process-io-api/pkg/database"
+	"process-io-api/pkg/database/mongo"
+	"process-io-api/pkg/model"
 )
 
-func Start(ctx context.Context, config configuration.Config) error {
-	db, err := database.New(ctx, config)
-	if err != nil {
-		return err
+type Database interface {
+	GetVariable(userId string, key string) (model.VariableWithUser, error)
+	SetVariable(variable model.VariableWithUser) error
+	DeleteVariable(userId string, key string) error
+	ListVariables(userId string, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error)
+}
+
+func New(ctx context.Context, config configuration.Config) (Database, error) {
+	switch config.DatabaseSelection {
+	case "mongodb":
+		return mongo.New(ctx, config)
+	default:
+		return nil, errors.New("unknown database: " + config.DatabaseSelection)
 	}
-	cmd := controller.New(config, db)
-	return api.Start(ctx, config, cmd)
 }

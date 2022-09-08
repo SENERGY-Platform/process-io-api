@@ -30,6 +30,8 @@ type Config struct {
 	ServerPort      string `json:"server_port"`
 	Debug           bool   `json:"debug"`
 	EnableSwaggerUi bool   `json:"enable_swagger_ui"`
+
+	DatabaseSelection string `json:"database_selection"`
 }
 
 // loads config from json in location and used environment variables (e.g KafkaUrl --> KAFKA_URL)
