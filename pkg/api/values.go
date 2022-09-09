@@ -121,7 +121,7 @@ func (this *Values) Set(config configuration.Config, router *httprouter.Router, 
 // @Failure      500
 // @Router       /values/{key} [delete]
 func (this *Values) Delete(config configuration.Config, router *httprouter.Router, ctrl Controller) {
-	router.PUT("/values/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	router.DELETE("/values/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)

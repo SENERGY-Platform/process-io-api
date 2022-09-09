@@ -19,6 +19,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	_ "github.com/lib/pq"
 	"process-io-api/pkg/configuration"
 	"sync"
 	"time"

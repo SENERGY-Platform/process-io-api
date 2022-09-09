@@ -7,5 +7,7 @@
 
     "mongo_url": "",
     "mongo_table": "process_io",
-    "mongo_variables_collection": "variables"
+    "mongo_variables_collection": "variables",
+
+    "postgres_conn_string": ""
 }

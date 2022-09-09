@@ -91,7 +91,7 @@ func (this *Pg) GetVariable(userId string, key string) (result model.VariableWit
 const setVariableSql = `
 INSERT INTO variables (user_id, variable_key, process_definition_id, process_instance_id, unix_timestamp_in_s, variable_value) 
 VALUES ($1, $2, $3, $4, $5, $6)
-ON CONFLICT (id) DO UPDATE 
+ON CONFLICT (user_id, variable_key) DO UPDATE 
   SET process_definition_id = excluded.process_definition_id, 
       process_instance_id = excluded.process_instance_id,
       unix_timestamp_in_s = excluded.unix_timestamp_in_s,

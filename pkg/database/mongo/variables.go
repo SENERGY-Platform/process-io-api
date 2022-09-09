@@ -64,7 +64,18 @@ func (this *Mongo) GetVariable(userId string, key string) (result model.Variable
 	temp := this.variablesCollection().FindOne(ctx, filter)
 	err = temp.Err()
 	if err == mongo.ErrNoDocuments {
-		return result, err
+		return model.VariableWithUser{
+			VariableWithUnixTimestamp: model.VariableWithUnixTimestamp{
+				Variable: model.Variable{
+					Key:                 key,
+					Value:               nil,
+					ProcessDefinitionId: "",
+					ProcessInstanceId:   "",
+				},
+				UnixTimestampInS: 0,
+			},
+			UserId: userId,
+		}, nil
 	}
 	if err != nil {
 		return

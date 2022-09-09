@@ -21,6 +21,7 @@ import (
 	"errors"
 	"process-io-api/pkg/configuration"
 	"process-io-api/pkg/database/mongo"
+	"process-io-api/pkg/database/postgres"
 	"process-io-api/pkg/model"
 	"sync"
 )
@@ -38,6 +39,8 @@ func New(ctx context.Context, wg *sync.WaitGroup, config configuration.Config) (
 	switch config.DatabaseSelection {
 	case "mongodb":
 		return mongo.New(ctx, wg, config)
+	case "postgres":
+		return postgres.New(ctx, wg, config)
 	default:
 		return nil, errors.New("unknown database: " + config.DatabaseSelection)
 	}
