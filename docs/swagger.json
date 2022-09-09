@@ -40,8 +40,42 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.BulkResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.VariableWithUnixTimestamp"
+                            }
                         }
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/process-definitions/{definitionId}": {
+            "delete": {
+                "description": "deletes all variables associated with the definitionId; requesting user must be admin",
+                "tags": [
+                    "values",
+                    "variables",
+                    "process-definitions"
+                ],
+                "summary": "deletes all variables associated with the definitionId",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "definitionId associated with value",
+                        "name": "definitionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": ""
                     },
                     "500": {
                         "description": ""
@@ -136,6 +170,37 @@
                         "in": "body",
                         "required": true,
                         "schema": {}
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/process-instances/{instanceId}": {
+            "delete": {
+                "description": "deletes all variables associated with the instanceId; requesting user must be admin",
+                "tags": [
+                    "values",
+                    "variables",
+                    "process-instances"
+                ],
+                "summary": "deletes all variables associated with the instanceId",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "instanceId associated with value",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -428,10 +493,6 @@
                     }
                 }
             }
-        },
-        "model.BulkResponse": {
-            "type": "object",
-            "additionalProperties": true
         },
         "model.Variable": {
             "type": "object",

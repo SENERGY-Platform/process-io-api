@@ -28,6 +28,8 @@ type Database interface {
 	SetVariable(variable model.VariableWithUser) error
 	DeleteVariable(userId string, key string) error
 	ListVariables(userId string, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error)
+	DeleteVariablesOfProcessDefinition(definitionId string) error
+	DeleteVariablesOfProcessInstance(instanceId string) error
 }
 
 func New(config configuration.Config, db Database) *Controller {
@@ -78,4 +80,12 @@ func (this *Controller) Bulk(token auth.Token, bulk model.BulkRequest) (result m
 		result = append(result, variable)
 	}
 	return result, nil
+}
+
+func (this *Controller) DeleteProcessDefinition(definitionId string) error {
+	return this.db.DeleteVariablesOfProcessDefinition(definitionId)
+}
+
+func (this *Controller) DeleteProcessInstance(instanceId string) error {
+	return this.db.DeleteVariablesOfProcessInstance(instanceId)
 }

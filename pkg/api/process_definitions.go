@@ -137,3 +137,77 @@ func (this *ProcessDefinitions) Set(config configuration.Config, router *httprou
 		writer.WriteHeader(http.StatusNoContent)
 	})
 }
+
+// DeleteDefinition			 godoc
+// @Summary      deletes all variables associated with the definitionId
+// @Description  deletes all variables associated with the definitionId; requesting user must be admin
+// @Tags         values, variables, process-definitions
+// @Param        definitionId path string true "definitionId associated with value"
+// @Success      204
+// @Failure      400
+// @Failure      500
+// @Router       /process-definitions/{definitionId} [delete]
+func (this *ProcessDefinitions) DeleteDefinition(config configuration.Config, router *httprouter.Router, ctrl Controller) {
+	router.DELETE("/process-definitions/:definitionId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		if !token.IsAdmin() {
+			http.Error(writer, "not allowed", http.StatusForbidden)
+			return
+		}
+
+		definitionId := params.ByName("definitionId")
+		if definitionId == "" {
+			http.Error(writer, "missing definitionId", http.StatusBadRequest)
+			return
+		}
+
+		err = ctrl.DeleteProcessDefinition(definitionId)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		writer.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// DeleteInstance			 godoc
+// @Summary      deletes all variables associated with the instanceId
+// @Description  deletes all variables associated with the instanceId; requesting user must be admin
+// @Tags         values, variables, process-instances
+// @Param        instanceId path string true "instanceId associated with value"
+// @Success      204
+// @Failure      400
+// @Failure      500
+// @Router       /process-instances/{instanceId} [delete]
+func (this *ProcessDefinitions) DeleteInstance(config configuration.Config, router *httprouter.Router, ctrl Controller) {
+	router.DELETE("/process-instances/:instanceId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		if !token.IsAdmin() {
+			http.Error(writer, "not allowed", http.StatusForbidden)
+			return
+		}
+
+		instanceId := params.ByName("instanceId")
+		if instanceId == "" {
+			http.Error(writer, "missing instanceId", http.StatusBadRequest)
+			return
+		}
+
+		err = ctrl.DeleteProcessInstance(instanceId)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		writer.WriteHeader(http.StatusNoContent)
+	})
+}

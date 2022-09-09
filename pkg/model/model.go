@@ -41,6 +41,21 @@ type VariablesQueryOptions struct {
 	ProcessInstanceId   string
 }
 
+func (this VariablesQueryOptions) GetLimit() int64 {
+	return int64(this.Limit)
+}
+
+func (this VariablesQueryOptions) GetOffset() int64 {
+	return int64(this.Offset)
+}
+
+func (this VariablesQueryOptions) GetSort() string {
+	if this.Sort == "" {
+		return "key.asc"
+	}
+	return this.Sort
+}
+
 type BulkRequest struct {
 	Get []string   `json:"get"`
 	Set []Variable `json:"set"`

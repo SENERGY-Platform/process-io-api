@@ -24,8 +24,8 @@ import (
 	"os/signal"
 	"process-io-api/pkg"
 	"process-io-api/pkg/configuration"
+	"sync"
 	"syscall"
-	"time"
 )
 
 func main() {
@@ -39,7 +39,9 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	err = pkg.Start(ctx, config)
+	wg := &sync.WaitGroup{}
+
+	err = pkg.Start(ctx, wg, config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,6 +54,6 @@ func main() {
 		cancel()
 	}()
 
-	<-ctx.Done()                //waiting for context end; may happen by shutdown signal
-	time.Sleep(1 * time.Second) //give go routines time for cleanup and last messages
+	<-ctx.Done() //waiting for context end; may happen by shutdown signal
+	wg.Wait()    //wait for disconnects
 }

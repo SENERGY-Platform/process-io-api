@@ -11,9 +11,6 @@ definitions:
           $ref: '#/definitions/model.Variable'
         type: array
     type: object
-  model.BulkResponse:
-    additionalProperties: true
-    type: object
   model.Variable:
     properties:
       key:
@@ -64,12 +61,36 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.BulkResponse'
+            items:
+              $ref: '#/definitions/model.VariableWithUnixTimestamp'
+            type: array
         "500":
           description: ""
       summary: bulk write of variables and read of values
       tags:
       - bulk
+  /process-definitions/{definitionId}:
+    delete:
+      description: deletes all variables associated with the definitionId; requesting
+        user must be admin
+      parameters:
+      - description: definitionId associated with value
+        in: path
+        name: definitionId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: deletes all variables associated with the definitionId
+      tags:
+      - values
+      - variables
+      - process-definitions
   /process-definitions/{definitionId}/process-instances/{instanceId}/values/{key}:
     put:
       consumes:
@@ -140,6 +161,28 @@ paths:
       tags:
       - values
       - process-definitions
+  /process-instances/{instanceId}:
+    delete:
+      description: deletes all variables associated with the instanceId; requesting
+        user must be admin
+      parameters:
+      - description: instanceId associated with value
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: deletes all variables associated with the instanceId
+      tags:
+      - values
+      - variables
+      - process-instances
   /values/{key}:
     delete:
       description: delete the value associated with the given key

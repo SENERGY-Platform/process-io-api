@@ -32,6 +32,10 @@ type Config struct {
 	EnableSwaggerUi bool   `json:"enable_swagger_ui"`
 
 	DatabaseSelection string `json:"database_selection"`
+
+	MongoUrl                 string `json:"mongo_url"`
+	MongoTable               string `json:"mongo_table"`
+	MongoVariablesCollection string `json:"mongo_variables_collection"`
 }
 
 // loads config from json in location and used environment variables (e.g KafkaUrl --> KAFKA_URL)

@@ -22,6 +22,7 @@ import (
 	"process-io-api/pkg/configuration"
 	"process-io-api/pkg/database/mongo"
 	"process-io-api/pkg/model"
+	"sync"
 )
 
 type Database interface {
@@ -29,12 +30,14 @@ type Database interface {
 	SetVariable(variable model.VariableWithUser) error
 	DeleteVariable(userId string, key string) error
 	ListVariables(userId string, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error)
+	DeleteVariablesOfProcessDefinition(definitionId string) error
+	DeleteVariablesOfProcessInstance(instanceId string) error
 }
 
-func New(ctx context.Context, config configuration.Config) (Database, error) {
+func New(ctx context.Context, wg *sync.WaitGroup, config configuration.Config) (Database, error) {
 	switch config.DatabaseSelection {
 	case "mongodb":
-		return mongo.New(ctx, config)
+		return mongo.New(ctx, wg, config)
 	default:
 		return nil, errors.New("unknown database: " + config.DatabaseSelection)
 	}

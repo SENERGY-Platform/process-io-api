@@ -1,5 +1,11 @@
 {
     "server_port": "8080",
     "debug": false,
-    "enable_swagger_ui": false
+    "enable_swagger_ui": false,
+
+    "database_selection": "mongodb",
+
+    "mongo_url": "",
+    "mongo_table": "process_io",
+    "mongo_variables_collection": "variables"
 }

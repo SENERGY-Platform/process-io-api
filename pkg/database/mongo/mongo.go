@@ -18,34 +18,50 @@ package mongo
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"process-io-api/pkg/configuration"
-	"process-io-api/pkg/model"
+	"reflect"
+	"sync"
+	"time"
 )
 
-func New(ctx context.Context, config configuration.Config) (*Mongo, error) {
-	return &Mongo{config: config}, nil
+var CreateCollections = []func(db *Mongo) error{}
+
+func New(ctx context.Context, wg *sync.WaitGroup, config configuration.Config) (*Mongo, error) {
+	connectCtx, _ := context.WithTimeout(ctx, 10*time.Second)
+	reg := bson.NewRegistryBuilder().RegisterTypeMapEntry(bsontype.EmbeddedDocument, reflect.TypeOf(bson.M{})).Build() //ensure map marshalling to interface
+	client, err := mongo.Connect(connectCtx, options.Client().ApplyURI(config.MongoUrl), options.Client().SetRegistry(reg))
+	if err != nil {
+		return nil, err
+	}
+
+	db := &Mongo{config: config, client: client}
+	for _, creators := range CreateCollections {
+		err = creators(db)
+		if err != nil {
+			client.Disconnect(context.Background())
+			return nil, err
+		}
+	}
+
+	wg.Add(1)
+	go func() {
+		<-ctx.Done()
+		client.Disconnect(nil)
+		wg.Done()
+	}()
+
+	return db, nil
+}
+
+func getTimeoutContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), 10*time.Second)
 }
 
 type Mongo struct {
 	config configuration.Config
-}
-
-func (this *Mongo) GetVariable(userId string, key string) (model.VariableWithUser, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (this *Mongo) SetVariable(variable model.VariableWithUser) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (this *Mongo) DeleteVariable(userId string, key string) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (this *Mongo) ListVariables(userId string, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error) {
-	//TODO implement me
-	panic("implement me")
+	client *mongo.Client
 }

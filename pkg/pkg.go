@@ -22,10 +22,11 @@ import (
 	"process-io-api/pkg/configuration"
 	"process-io-api/pkg/controller"
 	"process-io-api/pkg/database"
+	"sync"
 )
 
-func Start(ctx context.Context, config configuration.Config) error {
-	db, err := database.New(ctx, config)
+func Start(ctx context.Context, wg *sync.WaitGroup, config configuration.Config) error {
+	db, err := database.New(ctx, wg, config)
 	if err != nil {
 		return err
 	}
