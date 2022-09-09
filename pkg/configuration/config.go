@@ -36,6 +36,7 @@ type Config struct {
 	MongoUrl                 string `json:"mongo_url"`
 	MongoTable               string `json:"mongo_table"`
 	MongoVariablesCollection string `json:"mongo_variables_collection"`
+	PostgresConnString       string `json:"postgres_conn_string"`
 }
 
 // loads config from json in location and used environment variables (e.g KafkaUrl --> KAFKA_URL)
