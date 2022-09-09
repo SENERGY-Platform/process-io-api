@@ -160,7 +160,7 @@ func (this *Pg) ListVariables(userId string, query model.VariablesQueryOptions) 
 		}
 		sqlQueryParts = append(sqlQueryParts, "ORDER BY "+sortField)
 		if sortDir != "" {
-			sqlQueryParts = append(sqlQueryParts, "ORDER BY "+sortDir)
+			sqlQueryParts = append(sqlQueryParts, sortDir)
 		}
 	}
 

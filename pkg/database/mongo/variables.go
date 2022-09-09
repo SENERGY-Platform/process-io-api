@@ -137,7 +137,14 @@ func (this *Mongo) ListVariables(userId string, query model.VariablesQueryOption
 	if err != nil {
 		return result, err
 	}
-	return readCursorResult[model.VariableWithUnixTimestamp](ctx, cursor)
+	temp, err := readCursorResult[model.VariableWithUser](ctx, cursor)
+	if err != nil {
+		return result, err
+	}
+	for _, e := range temp {
+		result = append(result, e.VariableWithUnixTimestamp)
+	}
+	return result, err
 }
 
 func (this *Mongo) DeleteVariablesOfProcessDefinition(definitionId string) error {

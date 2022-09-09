@@ -23,9 +23,11 @@ import (
 	"io"
 	"net/http"
 	"process-io-api/pkg/configuration"
+	"process-io-api/pkg/model"
 	"reflect"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestApiMongo(t *testing.T) {
@@ -61,9 +63,30 @@ func TestApiPostgres(t *testing.T) {
 }
 
 func runApiTests(t *testing.T, config configuration.Config) {
-	t.Run("create value v1", testRequest(config, "PUT", "/values/v1", 42, http.StatusNoContent, nil))
-	t.Run("get value v1", testRequest(config, "GET", "/values/v1", nil, http.StatusOK, 42))
+	now := time.Now()
+	backup := configuration.TimeNow
+	defer func() { configuration.TimeNow = backup }()
+	configuration.TimeNow = func() time.Time {
+		return now
+	}
+
+	t.Run("create value v1", testRequest(config, "PUT", "/values/v1", 13, http.StatusNoContent, nil))
+	t.Run("get value v1", testRequest(config, "GET", "/values/v1", nil, http.StatusOK, 13))
 	t.Run("get value unknown", testRequest(config, "GET", "/values/unknown", nil, http.StatusOK, nil))
+	t.Run("update value v1", testRequest(config, "PUT", "/values/v1", 42, http.StatusNoContent, nil))
+	t.Run("get updated value v1", testRequest(config, "GET", "/values/v1", nil, http.StatusOK, 42))
+
+	t.Run("get variables", testRequest(config, "GET", "/variables", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v1",
+				Value:               42,
+				ProcessDefinitionId: "",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
 }
 
 func testRequest(config configuration.Config, method string, path string, body interface{}, expectedStatusCode int, expected interface{}) func(t *testing.T) {

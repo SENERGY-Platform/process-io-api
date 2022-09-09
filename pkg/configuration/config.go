@@ -24,6 +24,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Config struct {
@@ -116,3 +117,5 @@ func handleEnvironmentVars(config *Config) {
 		}
 	}
 }
+
+var TimeNow = func() time.Time { return time.Now() }

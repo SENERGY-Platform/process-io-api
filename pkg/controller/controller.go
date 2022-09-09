@@ -20,7 +20,6 @@ import (
 	"process-io-api/pkg/auth"
 	"process-io-api/pkg/configuration"
 	"process-io-api/pkg/model"
-	"time"
 )
 
 type Database interface {
@@ -54,7 +53,7 @@ func (this *Controller) Set(token auth.Token, variable model.Variable) error {
 	return this.db.SetVariable(model.VariableWithUser{
 		VariableWithUnixTimestamp: model.VariableWithUnixTimestamp{
 			Variable:         variable,
-			UnixTimestampInS: time.Now().Unix(),
+			UnixTimestampInS: configuration.TimeNow().Unix(),
 		},
 		UserId: token.GetUserId(),
 	})
