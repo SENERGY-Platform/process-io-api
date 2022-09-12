@@ -87,6 +87,298 @@ func runApiTests(t *testing.T, config configuration.Config) {
 			UnixTimestampInS: configuration.TimeNow().Unix(),
 		},
 	}))
+
+	t.Run("create value d1 i1 v2", testRequest(config, "PUT", "/process-definitions/d1/process-instances/i1/values/v2", "a", http.StatusNoContent, nil))
+	t.Run("create value d2 i2 v3", testRequest(config, "PUT", "/process-definitions/d2/process-instances/i2/values/v3", "b", http.StatusNoContent, nil))
+	t.Run("create value d3 i3 v4", testRequest(config, "PUT", "/process-definitions/d3/process-instances/i3/values/v4", "c", http.StatusNoContent, nil))
+	t.Run("create value d4 v5", testRequest(config, "PUT", "/process-definitions/d4/values/v5", "d", http.StatusNoContent, nil))
+	t.Run("create value d5 v6", testRequest(config, "PUT", "/process-definitions/d5/values/v6", "e", http.StatusNoContent, nil))
+
+	t.Run("get variables", testRequest(config, "GET", "/variables", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v1",
+				Value:               42,
+				ProcessDefinitionId: "",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v2",
+				Value:               "a",
+				ProcessDefinitionId: "d1",
+				ProcessInstanceId:   "i1",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v3",
+				Value:               "b",
+				ProcessDefinitionId: "d2",
+				ProcessInstanceId:   "i2",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v4",
+				Value:               "c",
+				ProcessDefinitionId: "d3",
+				ProcessInstanceId:   "i3",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v5",
+				Value:               "d",
+				ProcessDefinitionId: "d4",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v6",
+				Value:               "e",
+				ProcessDefinitionId: "d5",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
+
+	t.Run("delete unknown", testRequest(config, "DELETE", "/values/unknown", nil, http.StatusNoContent, nil))
+
+	t.Run("get variables", testRequest(config, "GET", "/variables", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v1",
+				Value:               42,
+				ProcessDefinitionId: "",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v2",
+				Value:               "a",
+				ProcessDefinitionId: "d1",
+				ProcessInstanceId:   "i1",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v3",
+				Value:               "b",
+				ProcessDefinitionId: "d2",
+				ProcessInstanceId:   "i2",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v4",
+				Value:               "c",
+				ProcessDefinitionId: "d3",
+				ProcessInstanceId:   "i3",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v5",
+				Value:               "d",
+				ProcessDefinitionId: "d4",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v6",
+				Value:               "e",
+				ProcessDefinitionId: "d5",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
+
+	t.Run("delete v1", testRequest(config, "DELETE", "/values/v1", nil, http.StatusNoContent, nil))
+
+	t.Run("get variables", testRequest(config, "GET", "/variables", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v2",
+				Value:               "a",
+				ProcessDefinitionId: "d1",
+				ProcessInstanceId:   "i1",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v3",
+				Value:               "b",
+				ProcessDefinitionId: "d2",
+				ProcessInstanceId:   "i2",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v4",
+				Value:               "c",
+				ProcessDefinitionId: "d3",
+				ProcessInstanceId:   "i3",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v5",
+				Value:               "d",
+				ProcessDefinitionId: "d4",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v6",
+				Value:               "e",
+				ProcessDefinitionId: "d5",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
+
+	t.Run("delete d1", testRequestWithToken(config, admintoken, "DELETE", "/process-definitions/d1", nil, http.StatusNoContent, nil))
+
+	t.Run("get variables", testRequest(config, "GET", "/variables", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v3",
+				Value:               "b",
+				ProcessDefinitionId: "d2",
+				ProcessInstanceId:   "i2",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v4",
+				Value:               "c",
+				ProcessDefinitionId: "d3",
+				ProcessInstanceId:   "i3",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v5",
+				Value:               "d",
+				ProcessDefinitionId: "d4",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v6",
+				Value:               "e",
+				ProcessDefinitionId: "d5",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
+
+	t.Run("delete i2", testRequestWithToken(config, admintoken, "DELETE", "/process-instances/i2", nil, http.StatusNoContent, nil))
+
+	t.Run("get variables", testRequest(config, "GET", "/variables", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v4",
+				Value:               "c",
+				ProcessDefinitionId: "d3",
+				ProcessInstanceId:   "i3",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v5",
+				Value:               "d",
+				ProcessDefinitionId: "d4",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v6",
+				Value:               "e",
+				ProcessDefinitionId: "d5",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
+
+	t.Run("delete d4", testRequestWithToken(config, admintoken, "DELETE", "/process-definitions/d4", nil, http.StatusNoContent, nil))
+
+	t.Run("get variables", testRequest(config, "GET", "/variables", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v4",
+				Value:               "c",
+				ProcessDefinitionId: "d3",
+				ProcessInstanceId:   "i3",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v6",
+				Value:               "e",
+				ProcessDefinitionId: "d5",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
+
+	t.Run("delete d-unknown ", testRequestWithToken(config, admintoken, "DELETE", "/process-definitions/d-unknown", nil, http.StatusNoContent, nil))
+	t.Run("delete i-unknown ", testRequestWithToken(config, admintoken, "DELETE", "/process-instances/i-unknown", nil, http.StatusNoContent, nil))
+
+	t.Run("get variables", testRequest(config, "GET", "/variables", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v4",
+				Value:               "c",
+				ProcessDefinitionId: "d3",
+				ProcessInstanceId:   "i3",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+		{
+			Variable: model.Variable{
+				Key:                 "v6",
+				Value:               "e",
+				ProcessDefinitionId: "d5",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
 }
 
 func testRequest(config configuration.Config, method string, path string, body interface{}, expectedStatusCode int, expected interface{}) func(t *testing.T) {
