@@ -31,6 +31,7 @@ func StartTestEnv(ctx context.Context, wg *sync.WaitGroup, dbSelection string) (
 	if err != nil {
 		return config, err
 	}
+	config.DisableHttpLogger = true
 	config.DatabaseSelection = dbSelection
 	switch dbSelection {
 	case "mongodb":

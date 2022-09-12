@@ -1,6 +1,7 @@
 {
     "server_port": "8080",
     "debug": false,
+    "disable_http_logger": false,
     "enable_swagger_ui": false,
 
     "database_selection": "mongodb",

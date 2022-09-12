@@ -88,7 +88,12 @@ func GetRouter(config configuration.Config, command Controller) http.Handler {
 	}
 
 	var handler http.Handler
-	handler = util.NewLogger(util.NewCors(router))
+	if config.DisableHttpLogger {
+		handler = util.NewCors(router)
+	} else {
+		handler = util.NewLogger(util.NewCors(router))
+	}
+
 	return handler
 }
 

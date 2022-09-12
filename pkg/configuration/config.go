@@ -28,9 +28,10 @@ import (
 )
 
 type Config struct {
-	ServerPort      string `json:"server_port"`
-	Debug           bool   `json:"debug"`
-	EnableSwaggerUi bool   `json:"enable_swagger_ui"`
+	ServerPort        string `json:"server_port"`
+	Debug             bool   `json:"debug"`
+	DisableHttpLogger bool   `json:"disable_http_logger"`
+	EnableSwaggerUi   bool   `json:"enable_swagger_ui"`
 
 	DatabaseSelection string `json:"database_selection"`
 

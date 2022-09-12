@@ -409,6 +409,8 @@ func testRequestWithToken(config configuration.Config, token string, method stri
 			t.Error(err)
 			return
 		}
+		defer resp.Body.Close()
+		defer io.ReadAll(resp.Body) // ensure reuse of connection
 		if resp.StatusCode != expectedStatusCode {
 			temp, _ := io.ReadAll(resp.Body)
 			t.Error(resp.StatusCode, string(temp))
