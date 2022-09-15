@@ -39,6 +39,7 @@ type Controller interface {
 	Bulk(token auth.Token, bulk model.BulkRequest) (model.BulkResponse, error)
 	DeleteProcessDefinition(definitionId string) error
 	DeleteProcessInstance(instanceId string) error
+	Count(token auth.Token, query model.VariablesQueryOptions) (model.Count, error)
 }
 
 type EndpointMethod = func(config configuration.Config, router *httprouter.Router, ctrl Controller)

@@ -11,6 +11,11 @@ definitions:
           $ref: '#/definitions/model.Variable'
         type: array
     type: object
+  model.Count:
+    properties:
+      count:
+        type: integer
+    type: object
   model.Variable:
     properties:
       key:
@@ -69,6 +74,33 @@ paths:
       summary: bulk write of variables and read of values
       tags:
       - bulk
+  /count/variables:
+    get:
+      description: counts variables
+      parameters:
+      - description: filter by process instance id
+        in: query
+        name: process_instance_id
+        type: string
+      - description: filter by process definition id
+        in: query
+        name: process_definition_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Count'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: counts variables
+      tags:
+      - variables
+      - count
   /process-definitions/{definitionId}:
     delete:
       description: deletes all variables associated with the definitionId; requesting

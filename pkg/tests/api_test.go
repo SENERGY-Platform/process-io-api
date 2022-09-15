@@ -379,6 +379,33 @@ func runApiTests(t *testing.T, config configuration.Config) {
 			UnixTimestampInS: configuration.TimeNow().Unix(),
 		},
 	}))
+
+	t.Run("list variables instance i3", testRequest(config, "GET", "/variables?process_instance_id=i3", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v4",
+				Value:               "c",
+				ProcessDefinitionId: "d3",
+				ProcessInstanceId:   "i3",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
+	t.Run("list variables definition d5", testRequest(config, "GET", "/variables?process_definition_id=d5", nil, http.StatusOK, []model.VariableWithUnixTimestamp{
+		{
+			Variable: model.Variable{
+				Key:                 "v6",
+				Value:               "e",
+				ProcessDefinitionId: "d5",
+				ProcessInstanceId:   "",
+			},
+			UnixTimestampInS: configuration.TimeNow().Unix(),
+		},
+	}))
+
+	t.Run("count variables", testRequest(config, "GET", "/count/variables", nil, http.StatusOK, model.Count{Count: 2}))
+	t.Run("count variables instance i3", testRequest(config, "GET", "/count/variables?process_instance_id=i3", nil, http.StatusOK, model.Count{Count: 1}))
+	t.Run("count variables definition d5", testRequest(config, "GET", "/count/variables?process_definition_id=d5", nil, http.StatusOK, model.Count{Count: 1}))
 }
 
 func testRequest(config configuration.Config, method string, path string, body interface{}, expectedStatusCode int, expected interface{}) func(t *testing.T) {

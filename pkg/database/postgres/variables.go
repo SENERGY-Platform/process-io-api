@@ -132,15 +132,16 @@ func (this *Pg) ListVariables(userId string, query model.VariablesQueryOptions) 
 		userId,
 	}
 
-	sqlQueryParts = append(sqlQueryParts, "WHERE user_id = $1")
+	whereParts := []string{"WHERE user_id = $1"}
 	if query.ProcessDefinitionId != "" {
-		sqlQueryParts = append(sqlQueryParts, "process_definition_id = $"+(strconv.Itoa(len(args)+1)))
+		whereParts = append(whereParts, "process_definition_id = $"+(strconv.Itoa(len(args)+1)))
 		args = append(args, query.ProcessDefinitionId)
 	}
 	if query.ProcessInstanceId != "" {
-		sqlQueryParts = append(sqlQueryParts, "process_instance_id = $"+(strconv.Itoa(len(args)+1)))
+		whereParts = append(whereParts, "process_instance_id = $"+(strconv.Itoa(len(args)+1)))
 		args = append(args, query.ProcessInstanceId)
 	}
+	sqlQueryParts = append(sqlQueryParts, strings.Join(whereParts, " AND "))
 
 	if query.Sort != "" {
 		sortField := ""
@@ -170,7 +171,8 @@ func (this *Pg) ListVariables(userId string, query model.VariablesQueryOptions) 
 	}
 
 	sqlQuery := strings.Join(sqlQueryParts, " ")
-	rows, err := this.db.Query(sqlQuery, args...)
+	ctx, _ := getTimeoutContext()
+	rows, err := this.db.QueryContext(ctx, sqlQuery, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -193,6 +195,29 @@ func (this *Pg) ListVariables(userId string, query model.VariablesQueryOptions) 
 		result = append(result, element)
 	}
 	return result, nil
+}
+
+func (this *Pg) CountVariables(userId string, query model.VariablesQueryOptions) (result model.Count, err error) {
+	sqlQueryParts := []string{"SELECT COUNT(*) FROM variables"}
+	args := []interface{}{
+		userId,
+	}
+
+	whereParts := []string{"WHERE user_id = $1"}
+	if query.ProcessDefinitionId != "" {
+		whereParts = append(whereParts, "process_definition_id = $"+(strconv.Itoa(len(args)+1)))
+		args = append(args, query.ProcessDefinitionId)
+	}
+	if query.ProcessInstanceId != "" {
+		whereParts = append(whereParts, "process_instance_id = $"+(strconv.Itoa(len(args)+1)))
+		args = append(args, query.ProcessInstanceId)
+	}
+	sqlQueryParts = append(sqlQueryParts, strings.Join(whereParts, " AND "))
+
+	sqlQuery := strings.Join(sqlQueryParts, " ")
+	ctx, _ := getTimeoutContext()
+	err = this.db.QueryRowContext(ctx, sqlQuery, args...).Scan(&result.Count)
+	return result, err
 }
 
 const deleteProcessDefinitionSql = `DELETE FROM variables WHERE process_definition_id = $1;`

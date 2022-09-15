@@ -16,6 +16,10 @@
 
 package model
 
+type Count struct {
+	Count int64 `json:"count"`
+}
+
 type Variable struct {
 	Key                 string      `json:"key"`
 	Value               interface{} `json:"value"`

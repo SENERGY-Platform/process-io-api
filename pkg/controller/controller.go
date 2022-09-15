@@ -29,6 +29,7 @@ type Database interface {
 	ListVariables(userId string, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error)
 	DeleteVariablesOfProcessDefinition(definitionId string) error
 	DeleteVariablesOfProcessInstance(instanceId string) error
+	CountVariables(userId string, query model.VariablesQueryOptions) (model.Count, error)
 }
 
 func New(config configuration.Config, db Database) *Controller {
@@ -42,6 +43,10 @@ type Controller struct {
 
 func (this *Controller) List(token auth.Token, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error) {
 	return this.db.ListVariables(token.GetUserId(), query)
+}
+
+func (this *Controller) Count(token auth.Token, query model.VariablesQueryOptions) (model.Count, error) {
+	return this.db.CountVariables(token.GetUserId(), query)
 }
 
 func (this *Controller) Get(token auth.Token, key string) (model.VariableWithUnixTimestamp, error) {

@@ -91,6 +91,42 @@ func (this *Variables) List(config configuration.Config, router *httprouter.Rout
 	})
 }
 
+// Count godoc
+// @Summary      counts variables
+// @Description  counts variables
+// @Tags         variables, count
+// @Param        process_instance_id query string false "filter by process instance id"
+// @Param        process_definition_id query string false "filter by process definition id"
+// @Produce      json
+// @Success      200 {object} model.Count
+// @Failure      400
+// @Failure      500
+// @Router       /count/variables [get]
+func (this *Variables) Count(config configuration.Config, router *httprouter.Router, ctrl Controller) {
+	router.GET("/count/variables", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		query := model.VariablesQueryOptions{}
+
+		query.ProcessInstanceId = request.URL.Query().Get("process_instance_id")
+		query.ProcessDefinitionId = request.URL.Query().Get("process_definition_id")
+
+		result, err := ctrl.Count(token, query)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		writer.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(writer).Encode(result)
+
+	})
+}
+
 // Get godoc
 // @Summary      returns the variable associated with the given key
 // @Description  returns the variable associated with the given key

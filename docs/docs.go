@@ -60,6 +60,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/count/variables": {
+            "get": {
+                "description": "counts variables",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "variables",
+                    "count"
+                ],
+                "summary": "counts variables",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filter by process instance id",
+                        "name": "process_instance_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter by process definition id",
+                        "name": "process_definition_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Count"
+                        }
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/process-definitions/{definitionId}": {
             "delete": {
                 "description": "deletes all variables associated with the definitionId; requesting user must be admin",
@@ -499,6 +540,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.Variable"
                     }
+                }
+            }
+        },
+        "model.Count": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
                 }
             }
         },

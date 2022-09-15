@@ -147,6 +147,19 @@ func (this *Mongo) ListVariables(userId string, query model.VariablesQueryOption
 	return result, err
 }
 
+func (this *Mongo) CountVariables(userId string, query model.VariablesQueryOptions) (result model.Count, err error) {
+	filter := bson.M{VariableBson.UserId: userId}
+	if query.ProcessDefinitionId != "" {
+		filter[VariableBson.ProcessDefinitionId] = query.ProcessDefinitionId
+	}
+	if query.ProcessInstanceId != "" {
+		filter[VariableBson.ProcessInstanceId] = query.ProcessInstanceId
+	}
+	ctx, _ := getTimeoutContext()
+	result.Count, err = this.variablesCollection().CountDocuments(ctx, filter)
+	return
+}
+
 func (this *Mongo) DeleteVariablesOfProcessDefinition(definitionId string) error {
 	ctx, _ := getTimeoutContext()
 	_, err := this.variablesCollection().DeleteMany(ctx, bson.M{

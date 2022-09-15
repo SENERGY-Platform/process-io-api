@@ -33,6 +33,7 @@ type Database interface {
 	ListVariables(userId string, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error)
 	DeleteVariablesOfProcessDefinition(definitionId string) error
 	DeleteVariablesOfProcessInstance(instanceId string) error
+	CountVariables(userId string, query model.VariablesQueryOptions) (model.Count, error)
 }
 
 func New(ctx context.Context, wg *sync.WaitGroup, config configuration.Config) (Database, error) {
