@@ -41,8 +41,12 @@ type Controller struct {
 	db     Database
 }
 
-func (this *Controller) List(token auth.Token, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error) {
-	return this.db.ListVariables(token.GetUserId(), query)
+func (this *Controller) List(token auth.Token, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
+	result, err = this.db.ListVariables(token.GetUserId(), query)
+	if result == nil {
+		result = []model.VariableWithUnixTimestamp{}
+	}
+	return
 }
 
 func (this *Controller) Count(token auth.Token, query model.VariablesQueryOptions) (model.Count, error) {
