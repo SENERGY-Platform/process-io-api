@@ -41,6 +41,7 @@ type VariablesQueryOptions struct {
 	Limit               int
 	Offset              int
 	Sort                string
+	KeyRegex            string
 	ProcessDefinitionId string
 	ProcessInstanceId   string
 }

@@ -78,6 +78,7 @@ func (this *Variables) List(config configuration.Config, router *httprouter.Rout
 
 		query.ProcessInstanceId = request.URL.Query().Get("process_instance_id")
 		query.ProcessDefinitionId = request.URL.Query().Get("process_definition_id")
+		query.KeyRegex = request.URL.Query().Get("key_regex")
 
 		result, err := ctrl.List(token, query)
 		if err != nil {
@@ -114,6 +115,7 @@ func (this *Variables) Count(config configuration.Config, router *httprouter.Rou
 
 		query.ProcessInstanceId = request.URL.Query().Get("process_instance_id")
 		query.ProcessDefinitionId = request.URL.Query().Get("process_definition_id")
+		query.KeyRegex = request.URL.Query().Get("key_regex")
 
 		result, err := ctrl.Count(token, query)
 		if err != nil {

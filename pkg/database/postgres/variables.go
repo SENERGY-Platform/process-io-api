@@ -141,6 +141,10 @@ func (this *Pg) ListVariables(userId string, query model.VariablesQueryOptions) 
 		whereParts = append(whereParts, "process_instance_id = $"+(strconv.Itoa(len(args)+1)))
 		args = append(args, query.ProcessInstanceId)
 	}
+	if query.KeyRegex != "" {
+		whereParts = append(whereParts, "variable_key ~ $"+(strconv.Itoa(len(args)+1)))
+		args = append(args, query.KeyRegex)
+	}
 	sqlQueryParts = append(sqlQueryParts, strings.Join(whereParts, " AND "))
 
 	if query.Sort != "" {
@@ -211,6 +215,10 @@ func (this *Pg) CountVariables(userId string, query model.VariablesQueryOptions)
 	if query.ProcessInstanceId != "" {
 		whereParts = append(whereParts, "process_instance_id = $"+(strconv.Itoa(len(args)+1)))
 		args = append(args, query.ProcessInstanceId)
+	}
+	if query.KeyRegex != "" {
+		whereParts = append(whereParts, "variable_key ~ $"+(strconv.Itoa(len(args)+1)))
+		args = append(args, query.KeyRegex)
 	}
 	sqlQueryParts = append(sqlQueryParts, strings.Join(whereParts, " AND "))
 

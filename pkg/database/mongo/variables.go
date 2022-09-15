@@ -132,6 +132,9 @@ func (this *Mongo) ListVariables(userId string, query model.VariablesQueryOption
 	if query.ProcessInstanceId != "" {
 		filter[VariableBson.ProcessInstanceId] = query.ProcessInstanceId
 	}
+	if query.KeyRegex != "" {
+		filter[VariableBson.Key] = bson.M{"$regex": query.KeyRegex, "$options": "i"}
+	}
 	ctx, _ := getTimeoutContext()
 	cursor, err := this.variablesCollection().Find(ctx, filter, opt)
 	if err != nil {
@@ -154,6 +157,9 @@ func (this *Mongo) CountVariables(userId string, query model.VariablesQueryOptio
 	}
 	if query.ProcessInstanceId != "" {
 		filter[VariableBson.ProcessInstanceId] = query.ProcessInstanceId
+	}
+	if query.KeyRegex != "" {
+		filter[VariableBson.Key] = bson.M{"$regex": query.KeyRegex, "$options": "i"}
 	}
 	ctx, _ := getTimeoutContext()
 	result.Count, err = this.variablesCollection().CountDocuments(ctx, filter)
