@@ -23,6 +23,7 @@ import (
 	"process-io-api/pkg/auth"
 	"process-io-api/pkg/configuration"
 	"process-io-api/pkg/model"
+	"strings"
 )
 
 func init() {
@@ -44,13 +45,13 @@ type Anything = interface{}
 // @Failure      500
 // @Router       /values/{key} [get]
 func (this *Values) Get(config configuration.Config, router *httprouter.Router, ctrl Controller) {
-	router.GET("/values/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	router.GET("/values/*key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		key := params.ByName("key")
+		key := strings.TrimPrefix(params.ByName("key"), "/")
 		if key == "" {
 			http.Error(writer, "missing id", http.StatusBadRequest)
 			return

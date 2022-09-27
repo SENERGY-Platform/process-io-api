@@ -24,6 +24,7 @@ import (
 	"process-io-api/pkg/configuration"
 	"process-io-api/pkg/model"
 	"strconv"
+	"strings"
 )
 
 func init() {
@@ -140,13 +141,13 @@ func (this *Variables) Count(config configuration.Config, router *httprouter.Rou
 // @Failure      500
 // @Router       /variables/{key} [get]
 func (this *Variables) Get(config configuration.Config, router *httprouter.Router, ctrl Controller) {
-	router.GET("/variables/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	router.GET("/variables/*key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		key := params.ByName("key")
+		key := strings.TrimPrefix(params.ByName("key"), "/")
 		if key == "" {
 			http.Error(writer, "missing id", http.StatusBadRequest)
 			return

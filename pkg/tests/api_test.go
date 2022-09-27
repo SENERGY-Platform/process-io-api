@@ -477,6 +477,8 @@ func runApiTests(t *testing.T, config configuration.Config) {
 		},
 	}))
 	t.Run("count b.r variables", testRequest(config, "GET", "/count/variables?key_regex="+url.QueryEscape("b.r"), nil, http.StatusOK, model.Count{Count: 2}))
+	t.Run("test calculated utcOffset Asia/Hong_Kong", testRequest(config, "GET", "/values/calculate_UtcOffset_Asia/Hong_Kong", nil, http.StatusOK, 8*60))
+	t.Run("test calculated utcOffset US/Hawaii", testRequest(config, "GET", "/values/calculate_UtcOffset_US/Hawaii", nil, http.StatusOK, -10*60))
 
 }
 

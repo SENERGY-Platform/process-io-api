@@ -19,7 +19,10 @@ package controller
 import (
 	"process-io-api/pkg/auth"
 	"process-io-api/pkg/configuration"
+	"process-io-api/pkg/controller/calculate"
 	"process-io-api/pkg/model"
+	"strings"
+	"time"
 )
 
 type Database interface {
@@ -33,12 +36,13 @@ type Database interface {
 }
 
 func New(config configuration.Config, db Database) *Controller {
-	return &Controller{config: config, db: db}
+	return &Controller{config: config, db: db, calc: calculate.New()}
 }
 
 type Controller struct {
 	config configuration.Config
 	db     Database
+	calc   *calculate.Calculate
 }
 
 func (this *Controller) List(token auth.Token, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
@@ -53,9 +57,27 @@ func (this *Controller) Count(token auth.Token, query model.VariablesQueryOption
 	return this.db.CountVariables(token.GetUserId(), query)
 }
 
-func (this *Controller) Get(token auth.Token, key string) (model.VariableWithUnixTimestamp, error) {
-	variable, err := this.db.GetVariable(token.GetUserId(), key)
-	return variable.VariableWithUnixTimestamp, err
+func (this *Controller) Get(token auth.Token, key string) (res model.VariableWithUnixTimestamp, err error) {
+	if strings.HasPrefix(key, calculate.Prefix) {
+		val, err := this.calc.Get(key)
+		if err != nil {
+			return res, err
+		}
+		res = model.VariableWithUnixTimestamp{
+			Variable: model.Variable{
+				Key:   key,
+				Value: val,
+			},
+			UnixTimestampInS: time.Now().Unix(),
+		}
+	} else {
+		variable, err := this.db.GetVariable(token.GetUserId(), key)
+		if err != nil {
+			return res, err
+		}
+		res = variable.VariableWithUnixTimestamp
+	}
+	return
 }
 
 func (this *Controller) Set(token auth.Token, variable model.Variable) error {
