@@ -1,12 +1,13 @@
 module process-io-api
 
-go 1.19
+go 1.20
 
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.7
 	github.com/ory/dockertest/v3 v3.9.1
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/swaggo/http-swagger v1.3.3
 	github.com/swaggo/swag v1.8.5
 	go.mongodb.org/mongo-driver v1.10.2

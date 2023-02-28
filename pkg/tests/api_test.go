@@ -38,7 +38,7 @@ func TestApiMongo(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	config, err := StartTestEnv(ctx, wg, "mongodb")
+	config, _, err := StartTestEnv(ctx, wg, "mongodb")
 	if err != nil {
 		t.Error(err)
 		return
@@ -54,7 +54,7 @@ func TestApiPostgres(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	config, err := StartTestEnv(ctx, wg, "postgres")
+	config, _, err := StartTestEnv(ctx, wg, "postgres")
 	if err != nil {
 		t.Error(err)
 		return

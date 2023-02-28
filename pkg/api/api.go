@@ -24,7 +24,6 @@ import (
 	"log"
 	"net/http"
 	"process-io-api/pkg/api/util"
-	"process-io-api/pkg/auth"
 	"process-io-api/pkg/configuration"
 	"process-io-api/pkg/model"
 	"reflect"
@@ -32,14 +31,14 @@ import (
 )
 
 type Controller interface {
-	List(token auth.Token, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error)
-	Get(token auth.Token, key string) (model.VariableWithUnixTimestamp, error)
-	Set(token auth.Token, variable model.Variable) error
-	Delete(token auth.Token, key string) error
-	Bulk(token auth.Token, bulk model.BulkRequest) (model.BulkResponse, error)
-	DeleteProcessDefinition(definitionId string) error
-	DeleteProcessInstance(instanceId string) error
-	Count(token auth.Token, query model.VariablesQueryOptions) (model.Count, error)
+	List(userid string, query model.VariablesQueryOptions) ([]model.VariableWithUnixTimestamp, error)
+	Get(userid string, key string) (model.VariableWithUnixTimestamp, error)
+	Set(userid string, variable model.Variable) error
+	Delete(userid string, key string) error
+	Bulk(userid string, bulk model.BulkRequest) (model.BulkResponse, error)
+	DeleteProcessDefinition(userid string, definitionId string) error
+	DeleteProcessInstance(userid string, instanceId string) error
+	Count(userid string, query model.VariablesQueryOptions) (model.Count, error)
 }
 
 type EndpointMethod = func(config configuration.Config, router *httprouter.Router, ctrl Controller)

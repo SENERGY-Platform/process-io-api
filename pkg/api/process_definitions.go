@@ -74,7 +74,7 @@ func (this *ProcessDefinitions) SetWithInstance(config configuration.Config, rou
 			return
 		}
 
-		err = ctrl.Set(token, model.Variable{
+		err = ctrl.Set(token.GetUserId(), model.Variable{
 			Key:                 key,
 			Value:               value,
 			ProcessDefinitionId: definitionId,
@@ -124,7 +124,7 @@ func (this *ProcessDefinitions) Set(config configuration.Config, router *httprou
 			return
 		}
 
-		err = ctrl.Set(token, model.Variable{
+		err = ctrl.Set(token.GetUserId(), model.Variable{
 			Key:                 key,
 			Value:               value,
 			ProcessDefinitionId: definitionId,
@@ -166,7 +166,7 @@ func (this *ProcessDefinitions) DeleteDefinition(config configuration.Config, ro
 			return
 		}
 
-		err = ctrl.DeleteProcessDefinition(definitionId)
+		err = ctrl.DeleteProcessDefinition(token.GetUserId(), definitionId)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
@@ -203,7 +203,7 @@ func (this *ProcessDefinitions) DeleteInstance(config configuration.Config, rout
 			return
 		}
 
-		err = ctrl.DeleteProcessInstance(instanceId)
+		err = ctrl.DeleteProcessInstance(token.GetUserId(), instanceId)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return

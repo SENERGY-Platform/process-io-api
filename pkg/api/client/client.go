@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 InfAI (CC SES)
+ * Copyright (c) 2023 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package pkg
+package client
 
 import (
-	"context"
-	"process-io-api/pkg/api"
-	"process-io-api/pkg/configuration"
-	"process-io-api/pkg/controller"
-	"process-io-api/pkg/database"
-	"sync"
+	"process-io-api/pkg/auth"
 )
 
-func Start(ctx context.Context, wg *sync.WaitGroup, config configuration.Config) (cmd *controller.Controller, err error) {
-	db, err := database.New(ctx, wg, config)
-	if err != nil {
-		return nil, err
+func New(apiUrl string, auth Auth, debug bool) *Client {
+	return &Client{
+		apiUrl: apiUrl,
+		auth:   auth,
+		debug:  debug,
 	}
-	cmd = controller.New(config, db)
-	return cmd, api.Start(ctx, config, cmd)
+}
+
+type Client struct {
+	apiUrl string
+	debug  bool
+	auth   Auth
+}
+
+type Auth interface {
+	ExchangeUserToken(userid string) (token auth.Token, err error)
 }

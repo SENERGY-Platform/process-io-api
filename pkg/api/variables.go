@@ -81,7 +81,7 @@ func (this *Variables) List(config configuration.Config, router *httprouter.Rout
 		query.ProcessDefinitionId = request.URL.Query().Get("process_definition_id")
 		query.KeyRegex = request.URL.Query().Get("key_regex")
 
-		result, err := ctrl.List(token, query)
+		result, err := ctrl.List(token.GetUserId(), query)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
@@ -118,7 +118,7 @@ func (this *Variables) Count(config configuration.Config, router *httprouter.Rou
 		query.ProcessDefinitionId = request.URL.Query().Get("process_definition_id")
 		query.KeyRegex = request.URL.Query().Get("key_regex")
 
-		result, err := ctrl.Count(token, query)
+		result, err := ctrl.Count(token.GetUserId(), query)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
@@ -153,7 +153,7 @@ func (this *Variables) Get(config configuration.Config, router *httprouter.Route
 			return
 		}
 
-		result, err := ctrl.Get(token, key)
+		result, err := ctrl.Get(token.GetUserId(), key)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
@@ -198,7 +198,7 @@ func (this *Variables) Set(config configuration.Config, router *httprouter.Route
 			return
 		}
 
-		err = ctrl.Set(token, msg)
+		err = ctrl.Set(token.GetUserId(), msg)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
@@ -229,7 +229,7 @@ func (this *Variables) Delete(config configuration.Config, router *httprouter.Ro
 			http.Error(writer, "missing key", http.StatusBadRequest)
 			return
 		}
-		err = ctrl.Delete(token, key)
+		err = ctrl.Delete(token.GetUserId(), key)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return

@@ -17,12 +17,10 @@
 package controller
 
 import (
-	"process-io-api/pkg/auth"
 	"process-io-api/pkg/configuration"
 	"process-io-api/pkg/controller/calculate"
 	"process-io-api/pkg/model"
 	"strings"
-	"time"
 )
 
 type Database interface {
@@ -45,19 +43,19 @@ type Controller struct {
 	calc   *calculate.Calculate
 }
 
-func (this *Controller) List(token auth.Token, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
-	result, err = this.db.ListVariables(token.GetUserId(), query)
+func (this *Controller) List(userid string, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
+	result, err = this.db.ListVariables(userid, query)
 	if result == nil {
 		result = []model.VariableWithUnixTimestamp{}
 	}
 	return
 }
 
-func (this *Controller) Count(token auth.Token, query model.VariablesQueryOptions) (model.Count, error) {
-	return this.db.CountVariables(token.GetUserId(), query)
+func (this *Controller) Count(userid string, query model.VariablesQueryOptions) (model.Count, error) {
+	return this.db.CountVariables(userid, query)
 }
 
-func (this *Controller) Get(token auth.Token, key string) (res model.VariableWithUnixTimestamp, err error) {
+func (this *Controller) Get(userid string, key string) (res model.VariableWithUnixTimestamp, err error) {
 	if strings.HasPrefix(key, calculate.Prefix) {
 		val, err := this.calc.Get(key)
 		if err != nil {
@@ -68,10 +66,10 @@ func (this *Controller) Get(token auth.Token, key string) (res model.VariableWit
 				Key:   key,
 				Value: val,
 			},
-			UnixTimestampInS: time.Now().Unix(),
+			UnixTimestampInS: configuration.TimeNow().Unix(),
 		}
 	} else {
-		variable, err := this.db.GetVariable(token.GetUserId(), key)
+		variable, err := this.db.GetVariable(userid, key)
 		if err != nil {
 			return res, err
 		}
@@ -80,30 +78,30 @@ func (this *Controller) Get(token auth.Token, key string) (res model.VariableWit
 	return
 }
 
-func (this *Controller) Set(token auth.Token, variable model.Variable) error {
+func (this *Controller) Set(userid string, variable model.Variable) error {
 	return this.db.SetVariable(model.VariableWithUser{
 		VariableWithUnixTimestamp: model.VariableWithUnixTimestamp{
 			Variable:         variable,
 			UnixTimestampInS: configuration.TimeNow().Unix(),
 		},
-		UserId: token.GetUserId(),
+		UserId: userid,
 	})
 }
 
-func (this *Controller) Delete(token auth.Token, key string) error {
-	return this.db.DeleteVariable(token.GetUserId(), key)
+func (this *Controller) Delete(userid string, key string) error {
+	return this.db.DeleteVariable(userid, key)
 }
 
-func (this *Controller) Bulk(token auth.Token, bulk model.BulkRequest) (result model.BulkResponse, err error) {
+func (this *Controller) Bulk(userid string, bulk model.BulkRequest) (result model.BulkResponse, err error) {
 	for _, variable := range bulk.Set {
-		err = this.Set(token, variable)
+		err = this.Set(userid, variable)
 		if err != nil {
 			return result, err
 		}
 	}
 	for _, key := range bulk.Get {
 		var variable model.VariableWithUnixTimestamp
-		variable, err = this.Get(token, key)
+		variable, err = this.Get(userid, key)
 		if err != nil {
 			return result, err
 		}
@@ -112,10 +110,10 @@ func (this *Controller) Bulk(token auth.Token, bulk model.BulkRequest) (result m
 	return result, nil
 }
 
-func (this *Controller) DeleteProcessDefinition(definitionId string) error {
+func (this *Controller) DeleteProcessDefinition(userid string, definitionId string) error {
 	return this.db.DeleteVariablesOfProcessDefinition(definitionId)
 }
 
-func (this *Controller) DeleteProcessInstance(instanceId string) error {
+func (this *Controller) DeleteProcessInstance(userid string, instanceId string) error {
 	return this.db.DeleteVariablesOfProcessInstance(instanceId)
 }

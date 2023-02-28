@@ -55,7 +55,7 @@ func (this *Bulk) Bulk(config configuration.Config, router *httprouter.Router, c
 			return
 		}
 
-		result, err := ctrl.Bulk(token, msg)
+		result, err := ctrl.Bulk(token.GetUserId(), msg)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return

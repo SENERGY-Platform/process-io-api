@@ -21,15 +21,16 @@ import (
 	"errors"
 	"process-io-api/pkg"
 	"process-io-api/pkg/configuration"
+	"process-io-api/pkg/controller"
 	"process-io-api/pkg/tests/docker"
 	"sync"
 	"time"
 )
 
-func StartTestEnv(ctx context.Context, wg *sync.WaitGroup, dbSelection string) (config configuration.Config, err error) {
+func StartTestEnv(ctx context.Context, wg *sync.WaitGroup, dbSelection string) (config configuration.Config, ctrl *controller.Controller, err error) {
 	config, err = configuration.Load("../../config.json")
 	if err != nil {
-		return config, err
+		return config, nil, err
 	}
 	config.DisableHttpLogger = true
 	config.DatabaseSelection = dbSelection
@@ -37,23 +38,23 @@ func StartTestEnv(ctx context.Context, wg *sync.WaitGroup, dbSelection string) (
 	case "mongodb":
 		port, _, err := docker.Mongo(ctx, wg)
 		if err != nil {
-			return config, err
+			return config, nil, err
 		}
 		config.MongoUrl = "mongodb://localhost:" + port
 	case "postgres":
 		config.PostgresConnString, err = docker.Postgres(ctx, wg, "test")
 		if err != nil {
-			return config, err
+			return config, nil, err
 		}
 	default:
-		return config, errors.New("unknown database: " + dbSelection)
+		return config, nil, errors.New("unknown database: " + dbSelection)
 	}
 
-	err = pkg.Start(ctx, wg, config)
+	ctrl, err = pkg.Start(ctx, wg, config)
 
 	time.Sleep(200 * time.Millisecond)
 
-	return config, err
+	return config, ctrl, err
 }
 
 const testTokenUser = "testOwner"

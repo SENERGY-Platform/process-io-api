@@ -41,7 +41,7 @@ func main() {
 
 	wg := &sync.WaitGroup{}
 
-	err = pkg.Start(ctx, wg, config)
+	_, err = pkg.Start(ctx, wg, config)
 	if err != nil {
 		log.Fatal(err)
 	}

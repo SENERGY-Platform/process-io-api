@@ -56,7 +56,7 @@ func (this *Values) Get(config configuration.Config, router *httprouter.Router, 
 			http.Error(writer, "missing id", http.StatusBadRequest)
 			return
 		}
-		result, err := ctrl.Get(token, key)
+		result, err := ctrl.Get(token.GetUserId(), key)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
@@ -98,7 +98,7 @@ func (this *Values) Set(config configuration.Config, router *httprouter.Router, 
 			return
 		}
 
-		err = ctrl.Set(token, model.Variable{
+		err = ctrl.Set(token.GetUserId(), model.Variable{
 			Key:                 key,
 			Value:               value,
 			ProcessDefinitionId: "",
@@ -133,7 +133,7 @@ func (this *Values) Delete(config configuration.Config, router *httprouter.Route
 			http.Error(writer, "missing key", http.StatusBadRequest)
 			return
 		}
-		err = ctrl.Delete(token, key)
+		err = ctrl.Delete(token.GetUserId(), key)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return

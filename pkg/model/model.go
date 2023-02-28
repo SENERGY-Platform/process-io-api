@@ -16,6 +16,11 @@
 
 package model
 
+import (
+	"net/url"
+	"strconv"
+)
+
 type Count struct {
 	Count int64 `json:"count"`
 }
@@ -59,6 +64,29 @@ func (this VariablesQueryOptions) GetSort() string {
 		return "key.asc"
 	}
 	return this.Sort
+}
+
+func (this VariablesQueryOptions) Encode() string {
+	values := url.Values{}
+	if this.Limit > 0 {
+		values["limit"] = []string{strconv.Itoa(this.Limit)}
+	}
+	if this.Offset > 0 {
+		values["offset"] = []string{strconv.Itoa(this.Offset)}
+	}
+	if this.Sort != "" {
+		values["sort"] = []string{this.Sort}
+	}
+	if this.KeyRegex != "" {
+		values["key_regex"] = []string{this.KeyRegex}
+	}
+	if this.ProcessInstanceId != "" {
+		values["process_instance_id"] = []string{this.ProcessInstanceId}
+	}
+	if this.ProcessDefinitionId != "" {
+		values["process_definition_id"] = []string{this.ProcessDefinitionId}
+	}
+	return values.Encode()
 }
 
 type BulkRequest struct {
