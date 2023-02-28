@@ -17,11 +17,11 @@
 package api
 
 import (
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/julienschmidt/httprouter"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/swaggo/swag"
 	"net/http"
-	"process-io-api/pkg/configuration"
 	"strings"
 )
 

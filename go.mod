@@ -1,4 +1,4 @@
-module process-io-api
+module github.com/SENERGY-Platform/process-io-api
 
 go 1.20
 

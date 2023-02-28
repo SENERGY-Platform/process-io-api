@@ -17,9 +17,9 @@
 package controller
 
 import (
-	"process-io-api/pkg/configuration"
-	"process-io-api/pkg/controller/calculate"
-	"process-io-api/pkg/model"
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
+	"github.com/SENERGY-Platform/process-io-api/pkg/controller/calculate"
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"strings"
 )
 

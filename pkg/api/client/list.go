@@ -19,10 +19,10 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"io"
 	"log"
 	"net/http"
-	"process-io-api/pkg/model"
 	"runtime/debug"
 	"time"
 )

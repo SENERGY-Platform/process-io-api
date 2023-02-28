@@ -19,10 +19,10 @@ package database
 import (
 	"context"
 	"errors"
-	"process-io-api/pkg/configuration"
-	"process-io-api/pkg/database/mongo"
-	"process-io-api/pkg/database/postgres"
-	"process-io-api/pkg/model"
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
+	"github.com/SENERGY-Platform/process-io-api/pkg/database/mongo"
+	"github.com/SENERGY-Platform/process-io-api/pkg/database/postgres"
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"sync"
 )
 

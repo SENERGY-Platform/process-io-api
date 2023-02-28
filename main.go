@@ -19,11 +19,11 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/SENERGY-Platform/process-io-api/pkg"
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"log"
 	"os"
 	"os/signal"
-	"process-io-api/pkg"
-	"process-io-api/pkg/configuration"
 	"sync"
 	"syscall"
 )

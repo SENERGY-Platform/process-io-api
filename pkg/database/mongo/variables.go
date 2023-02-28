@@ -17,10 +17,10 @@
 package mongo
 
 import (
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"process-io-api/pkg/model"
 	"runtime/debug"
 )
 

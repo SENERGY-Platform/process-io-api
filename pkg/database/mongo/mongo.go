@@ -18,11 +18,11 @@ package mongo
 
 import (
 	"context"
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"process-io-api/pkg/configuration"
 	"reflect"
 	"sync"
 	"time"

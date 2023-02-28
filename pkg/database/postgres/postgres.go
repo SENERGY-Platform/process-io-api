@@ -19,8 +19,8 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	_ "github.com/lib/pq"
-	"process-io-api/pkg/configuration"
 	"sync"
 	"time"
 )

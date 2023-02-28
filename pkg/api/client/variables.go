@@ -20,11 +20,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
-	"process-io-api/pkg/model"
 	"runtime/debug"
 	"time"
 )

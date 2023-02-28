@@ -17,7 +17,7 @@
 package client
 
 import (
-	"process-io-api/pkg/auth"
+	"github.com/SENERGY-Platform/process-io-api/pkg/auth"
 )
 
 func New(apiUrl string, auth Auth, debug bool) *Client {

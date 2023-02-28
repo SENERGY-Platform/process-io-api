@@ -19,7 +19,7 @@ package postgres
 import (
 	"database/sql"
 	"encoding/json"
-	"process-io-api/pkg/model"
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"strconv"
 	"strings"
 )

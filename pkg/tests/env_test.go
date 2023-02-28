@@ -19,10 +19,10 @@ package tests
 import (
 	"context"
 	"errors"
-	"process-io-api/pkg"
-	"process-io-api/pkg/configuration"
-	"process-io-api/pkg/controller"
-	"process-io-api/pkg/tests/docker"
+	"github.com/SENERGY-Platform/process-io-api/pkg"
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
+	"github.com/SENERGY-Platform/process-io-api/pkg/controller"
+	"github.com/SENERGY-Platform/process-io-api/pkg/tests/docker"
 	"sync"
 	"time"
 )

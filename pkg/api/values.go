@@ -18,11 +18,11 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/SENERGY-Platform/process-io-api/pkg/auth"
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
-	"process-io-api/pkg/auth"
-	"process-io-api/pkg/configuration"
-	"process-io-api/pkg/model"
 	"strings"
 )
 

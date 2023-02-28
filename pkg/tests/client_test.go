@@ -18,11 +18,11 @@ package tests
 
 import (
 	"context"
-	"process-io-api/pkg/api"
-	"process-io-api/pkg/api/client"
-	"process-io-api/pkg/auth"
-	"process-io-api/pkg/configuration"
-	"process-io-api/pkg/model"
+	"github.com/SENERGY-Platform/process-io-api/pkg/api"
+	"github.com/SENERGY-Platform/process-io-api/pkg/api/client"
+	"github.com/SENERGY-Platform/process-io-api/pkg/auth"
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"reflect"
 	"sync"
 	"testing"
