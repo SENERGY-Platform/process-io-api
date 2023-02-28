@@ -16,24 +16,36 @@
 
 package client
 
-import (
-	"github.com/SENERGY-Platform/process-io-api/pkg/auth"
-)
+import "github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
 
-func New(apiUrl string, auth Auth, debug bool) *Client {
-	return &Client{
+func New(apiUrl string, authEndpoint string, authClientId string, authClientSecret string, debug bool) *Client[auth.Token] {
+	return NewWithAuth(apiUrl, auth.New(authEndpoint, authClientId, authClientSecret, nil), debug)
+}
+
+func NewWithAuth(apiUrl string, a Auth[auth.Token], debug bool) *Client[auth.Token] {
+	return NewWithGenericAuth[auth.Token](apiUrl, a, debug)
+}
+
+func NewWithGenericAuth[TokenType Token](apiUrl string, auth Auth[TokenType], debug bool) *Client[TokenType] {
+	return &Client[TokenType]{
 		apiUrl: apiUrl,
 		auth:   auth,
 		debug:  debug,
 	}
 }
 
-type Client struct {
+type Client[TokenType Token] struct {
 	apiUrl string
 	debug  bool
-	auth   Auth
+	auth   Auth[TokenType]
 }
 
-type Auth interface {
-	ExchangeUserToken(userid string) (token auth.Token, err error)
+type Auth[TokenType Token] interface {
+	ExchangeUserToken(userid string) (token TokenType, err error)
+}
+
+type Token interface {
+	Jwt() string
+	IsAdmin() bool
+	GetUserId() string
 }

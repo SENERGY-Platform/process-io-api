@@ -26,7 +26,7 @@ import (
 	"time"
 )
 
-func (this *Client) Delete(userid string, key string) error {
+func (this *Client[TokenType]) Delete(userid string, key string) error {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func (this *Client) Delete(userid string, key string) error {
 	return nil
 }
 
-func (this *Client) DeleteProcessDefinition(userid string, definitionId string) error {
+func (this *Client[TokenType]) DeleteProcessDefinition(userid string, definitionId string) error {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func (this *Client) DeleteProcessDefinition(userid string, definitionId string) 
 	return nil
 }
 
-func (this *Client) DeleteProcessInstance(userid string, instanceId string) error {
+func (this *Client[TokenType]) DeleteProcessInstance(userid string, instanceId string) error {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return err

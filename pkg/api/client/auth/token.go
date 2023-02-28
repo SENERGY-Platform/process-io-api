@@ -19,28 +19,16 @@ package auth
 import (
 	"errors"
 	"github.com/golang-jwt/jwt"
+	"net/http"
 	"strings"
 )
 
-type Token struct {
-	Token       string              `json:"__token"`
-	Sub         string              `json:"sub,omitempty"`
-	RealmAccess map[string][]string `json:"realm_access,omitempty"`
+func GetAuthToken(req *http.Request) string {
+	return req.Header.Get("Authorization")
 }
 
-func (this *Token) String() string {
-	return this.Token
-}
-
-func (this *Token) Jwt() string {
-	return this.Token
-}
-
-func (this *Token) Valid() error {
-	if this.Sub == "" {
-		return errors.New("missing subject")
-	}
-	return nil
+func GetParsedToken(req *http.Request) (token Token, err error) {
+	return Parse(GetAuthToken(req))
 }
 
 func Parse(token string) (claims Token, err error) {
@@ -55,15 +43,36 @@ func Parse(token string) (claims Token, err error) {
 	return
 }
 
-func (this *Token) IsAdmin() bool {
+type Token struct {
+	Token       string              `json:"__token"`
+	Sub         string              `json:"sub,omitempty"`
+	RealmAccess map[string][]string `json:"realm_access,omitempty"`
+}
+
+func (this Token) String() string {
+	return this.Token
+}
+
+func (this Token) Jwt() string {
+	return this.Token
+}
+
+func (this Token) Valid() error {
+	if this.Sub == "" {
+		return errors.New("missing subject")
+	}
+	return nil
+}
+
+func (this Token) IsAdmin() bool {
 	return contains(this.GetRoles(), "admin")
 }
 
-func (this *Token) GetUserId() string {
+func (this Token) GetUserId() string {
 	return this.Sub
 }
 
-func (this *Token) GetRoles() []string {
+func (this Token) GetRoles() []string {
 	return this.RealmAccess["roles"]
 }
 

@@ -29,7 +29,7 @@ import (
 	"time"
 )
 
-func (this *Client) Set(userid string, variable model.Variable) (err error) {
+func (this *Client[TokenType]) Set(userid string, variable model.Variable) (err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (this *Client) Set(userid string, variable model.Variable) (err error) {
 	return err
 }
 
-func (this *Client) Get(userid string, key string) (value model.VariableWithUnixTimestamp, err error) {
+func (this *Client[TokenType]) Get(userid string, key string) (value model.VariableWithUnixTimestamp, err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return value, err

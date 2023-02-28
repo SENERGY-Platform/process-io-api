@@ -18,7 +18,7 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/SENERGY-Platform/process-io-api/pkg/auth"
+	"github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"github.com/julienschmidt/httprouter"

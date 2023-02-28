@@ -20,7 +20,7 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-io-api/pkg/api"
 	"github.com/SENERGY-Platform/process-io-api/pkg/api/client"
-	"github.com/SENERGY-Platform/process-io-api/pkg/auth"
+	"github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"reflect"
@@ -48,7 +48,7 @@ func TestClientApi(t *testing.T) {
 		return
 	}
 
-	c := client.New("http://localhost:"+config.ServerPort, MockAuth(map[string]string{testTokenUser: testtoken, adminTokenUser: admintoken}), true)
+	c := client.NewWithAuth("http://localhost:"+config.ServerPort, MockAuth(map[string]string{testTokenUser: testtoken, adminTokenUser: admintoken}), true)
 
 	runClientTests(t, c)
 }

@@ -27,7 +27,7 @@ import (
 	"time"
 )
 
-func (this *Client) List(userid string, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
+func (this *Client[TokenType]) List(userid string, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return result, err
@@ -66,7 +66,7 @@ func (this *Client) List(userid string, query model.VariablesQueryOptions) (resu
 	return result, err
 }
 
-func (this *Client) Count(userid string, query model.VariablesQueryOptions) (result model.Count, err error) {
+func (this *Client[TokenType]) Count(userid string, query model.VariablesQueryOptions) (result model.Count, err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return result, err

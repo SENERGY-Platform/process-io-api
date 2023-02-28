@@ -28,7 +28,7 @@ import (
 	"time"
 )
 
-func (this *Client) Bulk(userid string, bulk model.BulkRequest) (outputs model.BulkResponse, err error) {
+func (this *Client[TokenType]) Bulk(userid string, bulk model.BulkRequest) (outputs model.BulkResponse, err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return outputs, err
