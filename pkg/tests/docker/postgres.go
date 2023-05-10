@@ -19,11 +19,13 @@ package docker
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
-	"github.com/ory/dockertest/v3"
-	"github.com/ory/dockertest/v3/docker"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
 	"log"
 	"sync"
+	"time"
 )
 
 func Postgres(ctx context.Context, wg *sync.WaitGroup, dbname string) (conStr string, err error) {
@@ -31,45 +33,103 @@ func Postgres(ctx context.Context, wg *sync.WaitGroup, dbname string) (conStr st
 	return
 }
 
-func PostgresWithNetwork(ctx context.Context, wg *sync.WaitGroup, dbname string) (conStr string, ip string, port string, err error) {
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		return "", ip, port, err
-	}
-	container, err := pool.RunWithOptions(&dockertest.RunOptions{
-		Repository: "postgres",
-		Tag:        "11.2",
-		Env:        []string{"POSTGRES_DB=" + dbname, "POSTGRES_PASSWORD=pw", "POSTGRES_USER=usr"},
-	}, func(config *docker.HostConfig) {
-		config.Tmpfs = map[string]string{"/var/lib/postgresql/data": "rw"}
+func PostgresWithNetwork(ctx context.Context, wg *sync.WaitGroup, dbname string) (conStr string, containerIp string, hostPort string, err error) {
+	log.Println("start mqtt")
+	c, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: testcontainers.ContainerRequest{
+			Image:        "postgres:11.2",
+			ExposedPorts: []string{"5432/tcp"},
+			Tmpfs:        map[string]string{"/var/lib/postgresql/data": "rw"},
+			Env: map[string]string{
+				"POSTGRES_DB":       dbname,
+				"POSTGRES_PASSWORD": "pw",
+				"POSTGRES_USER":     "usr",
+			},
+			WaitingFor: wait.ForAll(
+				wait.ForLog("server started"),
+				wait.ForListeningPort("5432/tcp"),
+				wait.ForNop(waitretry(time.Minute, func(ctx context.Context, target wait.StrategyTarget) error {
+					p, err := target.MappedPort(ctx, "5432/tcp")
+					if err != nil {
+						log.Println(err)
+						return err
+					}
+					tryconstr := fmt.Sprintf("postgres://usr:pw@%s:%s/%s?sslmode=disable", "localhost", p.Port(), dbname)
+					return tryPostgresConn(tryconstr)
+				})),
+			),
+		},
+		Started: true,
 	})
 	if err != nil {
-		return "", ip, port, err
+		return "", containerIp, hostPort, err
 	}
+
 	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		<-ctx.Done()
-		log.Println("DEBUG: remove container " + container.Container.Name)
-		container.Close()
-		wg.Done()
+		log.Println("DEBUG: remove container mongo", c.Terminate(context.Background()))
 	}()
-	ip = container.Container.NetworkSettings.IPAddress
-	port = "5432"
-	conStr = fmt.Sprintf("postgres://usr:pw@%s:%s/%s?sslmode=disable", ip, port, dbname)
-	err = pool.Retry(func() error {
-		var err error
-		log.Println("try connecting to pg")
-		db, err := sql.Open("postgres", conStr)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-		err = db.Ping()
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-		return nil
+
+	containerIp, err = c.ContainerIP(ctx)
+	if err != nil {
+		return "", containerIp, hostPort, err
+	}
+	temp, err := c.MappedPort(ctx, "5432/tcp")
+	if err != nil {
+		return "", containerIp, hostPort, err
+	}
+	hostPort = temp.Port()
+	conStr = fmt.Sprintf("postgres://usr:pw@%s:%s/%s?sslmode=disable", containerIp, "5432", dbname)
+	err = retry(time.Minute, func() error {
+		return tryPostgresConn(conStr)
 	})
-	return
+	if err != nil {
+		return conStr, containerIp, hostPort, err
+	}
+	return conStr, containerIp, hostPort, nil
+}
+
+func tryPostgresConn(connstr string) error {
+	log.Println("try postgres conn to", connstr)
+	db, err := sql.Open("postgres", connstr)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	err = db.Ping()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func waitretry(timeout time.Duration, f func(ctx context.Context, target wait.StrategyTarget) error) func(ctx context.Context, target wait.StrategyTarget) error {
+	return func(ctx context.Context, target wait.StrategyTarget) (err error) {
+		return retry(timeout, func() error {
+			return f(ctx, target)
+		})
+	}
+}
+
+func retry(timeout time.Duration, f func() error) (err error) {
+	err = errors.New("initial")
+	start := time.Now()
+	for i := int64(1); err != nil && time.Since(start) < timeout; i++ {
+		err = f()
+		if err != nil {
+			log.Println("ERROR: :", err)
+			wait := time.Duration(i) * time.Second
+			if time.Since(start)+wait < timeout {
+				log.Println("ERROR: retry after:", wait.String())
+				time.Sleep(wait)
+			} else {
+				time.Sleep(time.Since(start) + wait - timeout)
+				return f()
+			}
+		}
+	}
+	return err
 }
