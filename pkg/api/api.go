@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/SENERGY-Platform/process-io-api/pkg/api/util"
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
+	"github.com/SENERGY-Platform/process-io-api/pkg/controller/metrics"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -41,11 +42,16 @@ type Controller interface {
 	Count(userid string, query model.VariablesQueryOptions) (model.Count, error)
 }
 
+type ControllerWithMetrics interface {
+	Controller
+	GetMetrics() *metrics.Metrics
+}
+
 type EndpointMethod = func(config configuration.Config, router *httprouter.Router, ctrl Controller)
 
 var endpoints = []interface{}{} //list of objects with EndpointMethod
 
-func Start(ctx context.Context, config configuration.Config, ctrl Controller) (err error) {
+func Start(ctx context.Context, config configuration.Config, ctrl ControllerWithMetrics) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = errors.New(fmt.Sprint(r))
@@ -78,8 +84,11 @@ func Start(ctx context.Context, config configuration.Config, ctrl Controller) (e
 // @securityDefinitions.apikey Bearer
 // @in header
 // @name Authorization
-func GetRouter(config configuration.Config, command Controller) http.Handler {
+func GetRouter(config configuration.Config, command ControllerWithMetrics) http.Handler {
 	router := httprouter.New()
+
+	router.Handler(http.MethodGet, "/metrics", command.GetMetrics())
+
 	for _, e := range endpoints {
 		for name, call := range getEndpointMethods(e) {
 			log.Println("add endpoint " + name)

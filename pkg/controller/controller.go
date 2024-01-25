@@ -19,6 +19,7 @@ package controller
 import (
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/SENERGY-Platform/process-io-api/pkg/controller/calculate"
+	"github.com/SENERGY-Platform/process-io-api/pkg/controller/metrics"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"strings"
 )
@@ -34,13 +35,18 @@ type Database interface {
 }
 
 func New(config configuration.Config, db Database) *Controller {
-	return &Controller{config: config, db: db, calc: calculate.New()}
+	return &Controller{config: config, db: db, calc: calculate.New(), metrics: metrics.New()}
 }
 
 type Controller struct {
-	config configuration.Config
-	db     Database
-	calc   *calculate.Calculate
+	config  configuration.Config
+	db      Database
+	calc    *calculate.Calculate
+	metrics *metrics.Metrics
+}
+
+func (this *Controller) GetMetrics() *metrics.Metrics {
+	return this.metrics
 }
 
 func (this *Controller) List(userid string, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
@@ -75,10 +81,12 @@ func (this *Controller) Get(userid string, key string) (res model.VariableWithUn
 		}
 		res = variable.VariableWithUnixTimestamp
 	}
+	this.metrics.LogReadSize(userid, res.Variable)
 	return
 }
 
 func (this *Controller) Set(userid string, variable model.Variable) error {
+	this.metrics.LogWriteSize(userid, variable)
 	return this.db.SetVariable(model.VariableWithUser{
 		VariableWithUnixTimestamp: model.VariableWithUnixTimestamp{
 			Variable:         variable,

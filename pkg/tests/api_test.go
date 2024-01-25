@@ -514,7 +514,7 @@ func testRequestWithToken(config configuration.Config, token string, method stri
 		defer io.ReadAll(resp.Body) // ensure reuse of connection
 		if resp.StatusCode != expectedStatusCode {
 			temp, _ := io.ReadAll(resp.Body)
-			t.Error(resp.StatusCode, string(temp))
+			t.Error(resp.StatusCode, string(temp), method, "http://localhost:"+config.ServerPort+path)
 			return
 		}
 
