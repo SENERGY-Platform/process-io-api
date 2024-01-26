@@ -51,10 +51,16 @@ func (this *Controller) GetMetrics() *metrics.Metrics {
 
 func (this *Controller) List(userid string, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
 	result, err = this.db.ListVariables(userid, query)
+	if err != nil {
+		return []model.VariableWithUnixTimestamp{}, err
+	}
 	if result == nil {
 		result = []model.VariableWithUnixTimestamp{}
 	}
-	return
+	for _, variable := range result {
+		this.metrics.LogReadSize(userid, variable.Variable)
+	}
+	return result, nil
 }
 
 func (this *Controller) Count(userid string, query model.VariablesQueryOptions) (model.Count, error) {
