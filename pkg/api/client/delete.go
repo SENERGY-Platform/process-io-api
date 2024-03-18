@@ -26,7 +26,7 @@ import (
 	"time"
 )
 
-func (this *Client[TokenType]) Delete(userid string, key string) error {
+func (this *Client) Delete(userid string, key string) error {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return err
@@ -46,7 +46,7 @@ func (this *Client[TokenType]) Delete(userid string, key string) error {
 		debug.PrintStack()
 		return err
 	}
-	req.Header.Set("Authorization", token.Jwt())
+	req.Header.Set("Authorization", token)
 	req.Header.Set("X-UserId", userid)
 	resp, err := client.Do(req)
 	if err != nil {
@@ -63,7 +63,7 @@ func (this *Client[TokenType]) Delete(userid string, key string) error {
 	return nil
 }
 
-func (this *Client[TokenType]) DeleteProcessDefinition(userid string, definitionId string) error {
+func (this *Client) DeleteProcessDefinition(userid string, definitionId string) error {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return err
@@ -83,7 +83,7 @@ func (this *Client[TokenType]) DeleteProcessDefinition(userid string, definition
 		debug.PrintStack()
 		return err
 	}
-	req.Header.Set("Authorization", token.Jwt())
+	req.Header.Set("Authorization", token)
 	req.Header.Set("X-UserId", userid)
 	resp, err := client.Do(req)
 	if err != nil {
@@ -100,7 +100,7 @@ func (this *Client[TokenType]) DeleteProcessDefinition(userid string, definition
 	return nil
 }
 
-func (this *Client[TokenType]) DeleteProcessInstance(userid string, instanceId string) error {
+func (this *Client) DeleteProcessInstance(userid string, instanceId string) error {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return err
@@ -120,7 +120,7 @@ func (this *Client[TokenType]) DeleteProcessInstance(userid string, instanceId s
 		debug.PrintStack()
 		return err
 	}
-	req.Header.Set("Authorization", token.Jwt())
+	req.Header.Set("Authorization", token)
 	req.Header.Set("X-UserId", userid)
 	resp, err := client.Do(req)
 	if err != nil {

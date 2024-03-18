@@ -19,6 +19,7 @@ package auth
 import (
 	"encoding/json"
 	"errors"
+	"github.com/SENERGY-Platform/service-commons/pkg/cache"
 	"io"
 	"log"
 	"net/http"
@@ -26,14 +27,18 @@ import (
 	"time"
 )
 
-func (this *Auth) ExchangeUserToken(userid string) (token Token, err error) {
-	err = this.cache.UseWithExpirationInResult("user-token."+userid, func() (interface{}, time.Duration, error) {
+func (this *Auth) ExchangeUserToken(userid string) (token string, err error) {
+	return cache.UseWithExpInGet(this.cache, "user-token."+userid, func() (string, time.Duration, error) {
 		return this.exchangeUserToken(userid)
-	}, &token)
-	return token, err
+	}, func(s string) error {
+		if s == "" {
+			return errors.New("invalid token received from cache")
+		}
+		return nil
+	}, time.Hour)
 }
 
-func (this *Auth) exchangeUserToken(userid string) (token Token, expiration time.Duration, err error) {
+func (this *Auth) exchangeUserToken(userid string) (token string, expiration time.Duration, err error) {
 	resp, err := http.PostForm(this.endpoint+"/auth/realms/master/protocol/openid-connect/token", url.Values{
 		"client_id":         {this.clientId},
 		"client_secret":     {this.clientSecret},
@@ -55,8 +60,7 @@ func (this *Auth) exchangeUserToken(userid string) (token Token, expiration time
 	if err != nil {
 		return
 	}
-	token, err = Parse("Bearer " + openIdToken.AccessToken)
-	return token, time.Duration(openIdToken.ExpiresIn-5) * time.Second, err // subtract 5 seconds from expiration as a buffer
+	return "Bearer " + openIdToken.AccessToken, time.Duration(openIdToken.ExpiresIn-5) * time.Second, err // subtract 5 seconds from expiration as a buffer
 }
 
 type OpenidToken struct {
@@ -66,5 +70,4 @@ type OpenidToken struct {
 	RefreshToken     string    `json:"refresh_token"`
 	TokenType        string    `json:"token_type"`
 	RequestTime      time.Time `json:"-"`
-	ParsedToken      Token     `json:"-"`
 }

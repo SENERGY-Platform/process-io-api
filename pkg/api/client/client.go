@@ -16,32 +16,34 @@
 
 package client
 
-import "github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
+import (
+	"github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
+)
 
-func New(apiUrl string, authEndpoint string, authClientId string, authClientSecret string, debug bool) *Client[auth.Token] {
-	return NewWithAuth(apiUrl, auth.New(authEndpoint, authClientId, authClientSecret, nil), debug)
+func New(apiUrl string, authEndpoint string, authClientId string, authClientSecret string, debug bool) (*Client, error) {
+	a, err := auth.New(authEndpoint, authClientId, authClientSecret, nil)
+	if err != nil {
+		return nil, err
+	}
+	return NewWithAuth(apiUrl, a, debug), nil
 }
 
-func NewWithAuth(apiUrl string, a Auth[auth.Token], debug bool) *Client[auth.Token] {
-	return NewWithGenericAuth[auth.Token](apiUrl, a, debug)
-}
-
-func NewWithGenericAuth[TokenType Token](apiUrl string, auth Auth[TokenType], debug bool) *Client[TokenType] {
-	return &Client[TokenType]{
+func NewWithAuth(apiUrl string, a Auth, debug bool) *Client {
+	return &Client{
 		apiUrl: apiUrl,
-		auth:   auth,
+		auth:   a,
 		debug:  debug,
 	}
 }
 
-type Client[TokenType Token] struct {
+type Client struct {
 	apiUrl string
 	debug  bool
-	auth   Auth[TokenType]
+	auth   Auth
 }
 
-type Auth[TokenType Token] interface {
-	ExchangeUserToken(userid string) (token TokenType, err error)
+type Auth interface {
+	ExchangeUserToken(userid string) (token string, err error)
 }
 
 type Token interface {

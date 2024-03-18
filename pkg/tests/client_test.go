@@ -20,7 +20,6 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-io-api/pkg/api"
 	"github.com/SENERGY-Platform/process-io-api/pkg/api/client"
-	"github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"reflect"
@@ -31,8 +30,8 @@ import (
 
 type MockAuth map[string]string
 
-func (this MockAuth) ExchangeUserToken(userid string) (token auth.Token, err error) {
-	return auth.Parse(this[userid])
+func (this MockAuth) ExchangeUserToken(userid string) (token string, err error) {
+	return this[userid], nil
 }
 
 func TestClientApi(t *testing.T) {

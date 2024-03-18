@@ -18,9 +18,9 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
+	"github.com/SENERGY-Platform/service-commons/pkg/jwt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
@@ -46,7 +46,7 @@ type ProcessDefinitions struct{}
 // @Router       /process-definitions/{definitionId}/process-instances/{instanceId}/values/{key} [put]
 func (this *ProcessDefinitions) SetWithInstance(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.PUT("/process-definitions/:definitionId/process-instances/:instanceId/values/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -102,7 +102,7 @@ func (this *ProcessDefinitions) SetWithInstance(config configuration.Config, rou
 // @Router       /process-definitions/{definitionId}/values/{key} [put]
 func (this *ProcessDefinitions) Set(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.PUT("/process-definitions/:definitionId/values/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -149,7 +149,7 @@ func (this *ProcessDefinitions) Set(config configuration.Config, router *httprou
 // @Router       /process-definitions/{definitionId} [delete]
 func (this *ProcessDefinitions) DeleteDefinition(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.DELETE("/process-definitions/:definitionId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -186,7 +186,7 @@ func (this *ProcessDefinitions) DeleteDefinition(config configuration.Config, ro
 // @Router       /process-instances/{instanceId} [delete]
 func (this *ProcessDefinitions) DeleteInstance(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.DELETE("/process-instances/:instanceId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return

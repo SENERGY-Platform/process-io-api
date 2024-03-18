@@ -17,29 +17,30 @@
 package auth
 
 import (
+	"github.com/SENERGY-Platform/service-commons/pkg/cache"
+	"github.com/SENERGY-Platform/service-commons/pkg/cache/localcache"
 	"time"
 )
 
-func New(endpoint string, clientId string, clientSecret string, cache Cache) *Auth {
-	if cache == nil {
-		cache = NewCache(time.Minute)
+func New(endpoint string, clientId string, clientSecret string, c *cache.Cache) (auth *Auth, err error) {
+	if c == nil {
+		c, err = cache.New(cache.Config{L1Provider: localcache.NewProvider(60*time.Second, time.Second)})
+		if err != nil {
+			return auth, err
+		}
 	}
 	return &Auth{
-		cache:        cache,
+		cache:        c,
 		endpoint:     endpoint,
 		clientId:     clientId,
 		clientSecret: clientSecret,
-	}
+	}, nil
 }
 
 type Auth struct {
-	cache        Cache
+	cache        *cache.Cache
 	endpoint     string
 	clientId     string
 	clientSecret string
 	openid       *OpenidToken
-}
-
-type Cache interface {
-	UseWithExpirationInResult(key string, getter func() (interface{}, time.Duration, error), result interface{}) (err error)
 }

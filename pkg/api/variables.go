@@ -18,9 +18,9 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
+	"github.com/SENERGY-Platform/service-commons/pkg/jwt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
@@ -49,7 +49,7 @@ type Variables struct{}
 // @Router       /variables [get]
 func (this *Variables) List(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.GET("/variables", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -106,7 +106,7 @@ func (this *Variables) List(config configuration.Config, router *httprouter.Rout
 // @Router       /count/variables [get]
 func (this *Variables) Count(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.GET("/count/variables", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -142,7 +142,7 @@ func (this *Variables) Count(config configuration.Config, router *httprouter.Rou
 // @Router       /variables/{key} [get]
 func (this *Variables) Get(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.GET("/variables/*key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -177,7 +177,7 @@ func (this *Variables) Get(config configuration.Config, router *httprouter.Route
 // @Router       /variables/{key} [put]
 func (this *Variables) Set(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.PUT("/variables/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -219,7 +219,7 @@ func (this *Variables) Set(config configuration.Config, router *httprouter.Route
 // @Router       /variables/{key} [delete]
 func (this *Variables) Delete(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.DELETE("/variables/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return

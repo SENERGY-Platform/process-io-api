@@ -27,7 +27,7 @@ import (
 	"time"
 )
 
-func (this *Client[TokenType]) List(userid string, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
+func (this *Client) List(userid string, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return result, err
@@ -47,7 +47,7 @@ func (this *Client[TokenType]) List(userid string, query model.VariablesQueryOpt
 		debug.PrintStack()
 		return result, err
 	}
-	req.Header.Set("Authorization", token.Jwt())
+	req.Header.Set("Authorization", token)
 	req.Header.Set("X-UserId", userid)
 	resp, err := client.Do(req)
 	if err != nil {
@@ -66,7 +66,7 @@ func (this *Client[TokenType]) List(userid string, query model.VariablesQueryOpt
 	return result, err
 }
 
-func (this *Client[TokenType]) Count(userid string, query model.VariablesQueryOptions) (result model.Count, err error) {
+func (this *Client) Count(userid string, query model.VariablesQueryOptions) (result model.Count, err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return result, err
@@ -86,7 +86,7 @@ func (this *Client[TokenType]) Count(userid string, query model.VariablesQueryOp
 		debug.PrintStack()
 		return result, err
 	}
-	req.Header.Set("Authorization", token.Jwt())
+	req.Header.Set("Authorization", token)
 	req.Header.Set("X-UserId", userid)
 	resp, err := client.Do(req)
 	if err != nil {

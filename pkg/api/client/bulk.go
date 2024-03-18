@@ -28,7 +28,7 @@ import (
 	"time"
 )
 
-func (this *Client[TokenType]) Bulk(userid string, bulk model.BulkRequest) (outputs model.BulkResponse, err error) {
+func (this *Client) Bulk(userid string, bulk model.BulkRequest) (outputs model.BulkResponse, err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return outputs, err
@@ -52,7 +52,7 @@ func (this *Client[TokenType]) Bulk(userid string, bulk model.BulkRequest) (outp
 		debug.PrintStack()
 		return outputs, err
 	}
-	req.Header.Set("Authorization", token.Jwt())
+	req.Header.Set("Authorization", token)
 	req.Header.Set("X-UserId", userid)
 	resp, err := client.Do(req)
 	if err != nil {

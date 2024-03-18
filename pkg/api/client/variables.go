@@ -29,7 +29,7 @@ import (
 	"time"
 )
 
-func (this *Client[TokenType]) Set(userid string, variable model.Variable) (err error) {
+func (this *Client) Set(userid string, variable model.Variable) (err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func (this *Client[TokenType]) Set(userid string, variable model.Variable) (err 
 		debug.PrintStack()
 		return err
 	}
-	req.Header.Set("Authorization", token.Jwt())
+	req.Header.Set("Authorization", token)
 	req.Header.Set("X-UserId", userid)
 	resp, err := client.Do(req)
 	if err != nil {
@@ -70,7 +70,7 @@ func (this *Client[TokenType]) Set(userid string, variable model.Variable) (err 
 	return err
 }
 
-func (this *Client[TokenType]) Get(userid string, key string) (value model.VariableWithUnixTimestamp, err error) {
+func (this *Client) Get(userid string, key string) (value model.VariableWithUnixTimestamp, err error) {
 	token, err := this.auth.ExchangeUserToken(userid)
 	if err != nil {
 		return value, err
@@ -90,7 +90,7 @@ func (this *Client[TokenType]) Get(userid string, key string) (value model.Varia
 		debug.PrintStack()
 		return value, err
 	}
-	req.Header.Set("Authorization", token.Jwt())
+	req.Header.Set("Authorization", token)
 	req.Header.Set("X-UserId", userid)
 	resp, err := client.Do(req)
 	if err != nil {

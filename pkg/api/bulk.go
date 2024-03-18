@@ -18,9 +18,9 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
+	"github.com/SENERGY-Platform/service-commons/pkg/jwt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
@@ -43,7 +43,7 @@ type Bulk struct{}
 // @Router       /bulk [post]
 func (this *Bulk) Bulk(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.POST("/bulk", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return

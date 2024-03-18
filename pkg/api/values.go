@@ -18,9 +18,9 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/SENERGY-Platform/process-io-api/pkg/api/client/auth"
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
+	"github.com/SENERGY-Platform/service-commons/pkg/jwt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strings"
@@ -46,7 +46,7 @@ type Anything = interface{}
 // @Router       /values/{key} [get]
 func (this *Values) Get(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.GET("/values/*key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -80,7 +80,7 @@ func (this *Values) Get(config configuration.Config, router *httprouter.Router, 
 // @Router       /values/{key} [put]
 func (this *Values) Set(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.PUT("/values/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -123,7 +123,7 @@ func (this *Values) Set(config configuration.Config, router *httprouter.Router, 
 // @Router       /values/{key} [delete]
 func (this *Values) Delete(config configuration.Config, router *httprouter.Router, ctrl Controller) {
 	router.DELETE("/values/:key", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		token, err := auth.GetParsedToken(request)
+		token, err := jwt.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusUnauthorized)
 			return
