@@ -18,6 +18,7 @@ package auth
 
 import (
 	"errors"
+	scjwt "github.com/SENERGY-Platform/service-commons/pkg/jwt"
 	"github.com/golang-jwt/jwt"
 	"net/http"
 	"strings"
@@ -28,6 +29,14 @@ func GetAuthToken(req *http.Request) string {
 }
 
 func GetParsedToken(req *http.Request) (token Token, err error) {
+	temp, ok := scjwt.GetTokenFromContext(req.Context())
+	if ok {
+		return Token{
+			Token:       temp.Token,
+			Sub:         temp.Sub,
+			RealmAccess: temp.RealmAccess,
+		}, nil
+	}
 	return Parse(GetAuthToken(req))
 }
 

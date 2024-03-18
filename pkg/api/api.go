@@ -24,6 +24,7 @@ import (
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"github.com/SENERGY-Platform/process-io-api/pkg/controller/metrics"
 	"github.com/SENERGY-Platform/process-io-api/pkg/model"
+	"github.com/SENERGY-Platform/service-commons/pkg/accesslog"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
@@ -100,7 +101,7 @@ func GetRouter(config configuration.Config, command ControllerWithMetrics) http.
 	if config.DisableHttpLogger {
 		handler = util.NewCors(router)
 	} else {
-		handler = util.NewLogger(util.NewCors(router))
+		handler = accesslog.New(util.NewCors(router))
 	}
 
 	return handler
