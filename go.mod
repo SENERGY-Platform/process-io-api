@@ -3,7 +3,7 @@ module github.com/SENERGY-Platform/process-io-api
 go 1.22
 
 require (
-	github.com/SENERGY-Platform/service-commons v0.0.0-20240708085423-94423a495d7f
+	github.com/SENERGY-Platform/service-commons v0.0.0-20240813072046-91b3195dd8fc
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.9
 	github.com/prometheus/client_golang v1.19.1
