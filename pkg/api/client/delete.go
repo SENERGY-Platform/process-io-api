@@ -19,7 +19,7 @@ package client
 import (
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"runtime/debug"
@@ -31,9 +31,7 @@ func (this *Client) Delete(userid string, key string) error {
 	if err != nil {
 		return err
 	}
-	if this.debug {
-		log.Println("DEBUG: delete", userid, key)
-	}
+	slog.Debug("delete", "userid", userid, "key", key)
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -68,9 +66,7 @@ func (this *Client) DeleteProcessDefinition(userid string, definitionId string) 
 	if err != nil {
 		return err
 	}
-	if this.debug {
-		log.Println("DEBUG: delete process-definition", userid, definitionId)
-	}
+	slog.Debug("delete process-definition", "userid", userid, "definitionId", definitionId)
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -105,9 +101,7 @@ func (this *Client) DeleteProcessInstance(userid string, instanceId string) erro
 	if err != nil {
 		return err
 	}
-	if this.debug {
-		log.Println("DEBUG: delete process-instance", userid, instanceId)
-	}
+	slog.Debug("delete process-instance", "userid", userid, "instanceId", instanceId)
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}

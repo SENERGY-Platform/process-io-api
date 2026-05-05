@@ -19,12 +19,13 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 )
 
 func (this *Client) List(userid string, query model.VariablesQueryOptions) (result []model.VariableWithUnixTimestamp, err error) {
@@ -32,9 +33,7 @@ func (this *Client) List(userid string, query model.VariablesQueryOptions) (resu
 	if err != nil {
 		return result, err
 	}
-	if this.debug {
-		log.Printf("DEBUG: list %v %#v\n", userid, query)
-	}
+	slog.Debug("list", "userid", userid, "query", fmt.Sprintf("%#v", query))
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -71,9 +70,7 @@ func (this *Client) Count(userid string, query model.VariablesQueryOptions) (res
 	if err != nil {
 		return result, err
 	}
-	if this.debug {
-		log.Printf("DEBUG: list %v %#v\n", userid, query)
-	}
+	slog.Debug("count", "userid", userid, "query", fmt.Sprintf("%#v", query))
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}

@@ -18,11 +18,12 @@ package metrics
 
 import (
 	"encoding/json"
+	"log/slog"
+	"net/http"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"log"
-	"net/http"
 )
 
 func New() *Metrics {
@@ -61,7 +62,7 @@ func (this *Metrics) LogWriteSize(userId string, writtenElement interface{}) {
 	}
 	buf, err := json.Marshal(writtenElement)
 	if err != nil {
-		log.Printf("ERROR: in LogWriteSize(): %v\n", err.Error())
+		slog.Error("error in LogWriteSize()", "error", err.Error())
 	} else {
 		this.writeSizes.WithLabelValues(userId).Add(float64(len(buf)))
 	}
@@ -73,7 +74,7 @@ func (this *Metrics) LogReadSize(userId string, readElement interface{}) {
 	}
 	buf, err := json.Marshal(readElement)
 	if err != nil {
-		log.Printf("ERROR: in LogWriteSize(): %v\n", err.Error())
+		slog.Error("error in LogReadSize()", "error", err.Error())
 	} else {
 		this.readSizes.WithLabelValues(userId).Add(float64(len(buf)))
 	}

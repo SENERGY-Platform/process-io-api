@@ -19,13 +19,14 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/SENERGY-Platform/process-io-api/pkg"
-	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"log"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+
+	"github.com/SENERGY-Platform/process-io-api/pkg"
+	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 )
 
 func main() {
@@ -43,6 +44,7 @@ func main() {
 
 	_, err = pkg.Start(ctx, wg, config)
 	if err != nil {
+		config.GetLogger().Error("FATAL: start failed", "error", err)
 		log.Fatal(err)
 	}
 
@@ -50,7 +52,7 @@ func main() {
 		shutdown := make(chan os.Signal, 1)
 		signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 		sig := <-shutdown
-		log.Println("received shutdown signal", sig)
+		config.GetLogger().Info("received shutdown signal", "signal", sig)
 		cancel()
 	}()
 

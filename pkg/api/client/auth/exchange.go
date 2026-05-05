@@ -19,12 +19,13 @@ package auth
 import (
 	"encoding/json"
 	"errors"
-	"github.com/SENERGY-Platform/service-commons/pkg/cache"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/SENERGY-Platform/service-commons/pkg/cache"
 )
 
 func (this *Auth) ExchangeUserToken(userid string) (token string, err error) {
@@ -50,7 +51,7 @@ func (this *Auth) exchangeUserToken(userid string) (token string, expiration tim
 	}
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		log.Println("ERROR: GetUserToken()", resp.StatusCode, string(body))
+		slog.Error("unable to exchange user token", "userId", userid, "status", resp.StatusCode, "error", string(body))
 		err = errors.New("access denied")
 		resp.Body.Close()
 		return

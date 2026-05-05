@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"runtime/debug"
 	"time"
+
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 )
 
 func (this *Client) Set(userid string, variable model.Variable) (err error) {
@@ -38,9 +39,7 @@ func (this *Client) Set(userid string, variable model.Variable) (err error) {
 	if err != nil {
 		return err
 	}
-	if this.debug {
-		log.Println("DEBUG: store", userid, variable.Key, string(body))
-	}
+	slog.Debug("store", "userid", userid, "key", variable.Key, "value", string(body))
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -75,9 +74,7 @@ func (this *Client) Get(userid string, key string) (value model.VariableWithUnix
 	if err != nil {
 		return value, err
 	}
-	if this.debug {
-		log.Println("DEBUG: read", userid, key)
-	}
+	slog.Debug("read", "userid", userid, "key", key)
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}

@@ -20,12 +20,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"github.com/SENERGY-Platform/process-io-api/pkg/model"
 )
 
 func (this *Client) Bulk(userid string, bulk model.BulkRequest) (outputs model.BulkResponse, err error) {
@@ -37,9 +38,7 @@ func (this *Client) Bulk(userid string, bulk model.BulkRequest) (outputs model.B
 	if err != nil {
 		return outputs, err
 	}
-	if this.debug {
-		log.Println("DEBUG: bulk", userid, string(body))
-	}
+	slog.Debug("bulk", "userid", userid, "body", string(body))
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}

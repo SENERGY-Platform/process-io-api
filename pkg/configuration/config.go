@@ -19,12 +19,16 @@ package configuration
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"reflect"
 	"regexp"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
+
+	struct_logger "github.com/SENERGY-Platform/go-service-base/struct-logger"
 )
 
 type Config struct {
@@ -39,6 +43,9 @@ type Config struct {
 	MongoTable               string `json:"mongo_table"`
 	MongoVariablesCollection string `json:"mongo_variables_collection"`
 	PostgresConnString       string `json:"postgres_conn_string"`
+
+	LogLevel string       `json:"log_level"`
+	logger   *slog.Logger `json:"-"`
 }
 
 // loads config from json in location and used environment variables (e.g KafkaUrl --> KAFKA_URL)
@@ -120,3 +127,35 @@ func handleEnvironmentVars(config *Config) {
 }
 
 var TimeNow = func() time.Time { return time.Now() }
+
+func (this *Config) GetLogger() *slog.Logger {
+	if this.logger == nil {
+		if this.Debug {
+			this.LogLevel = "debug"
+		}
+		info, ok := debug.ReadBuildInfo()
+		project := ""
+		org := ""
+		if ok {
+			if parts := strings.Split(info.Main.Path, "/"); len(parts) > 2 {
+				project = strings.Join(parts[2:], "/")
+				org = strings.Join(parts[:2], "/")
+			}
+		}
+		this.logger = struct_logger.New(
+			struct_logger.Config{
+				Handler:    struct_logger.JsonHandlerSelector,
+				Level:      this.LogLevel,
+				TimeFormat: time.RFC3339Nano,
+				TimeUtc:    true,
+				AddMeta:    true,
+			},
+			os.Stdout,
+			org,
+			project,
+		)
+		slog.SetDefault(this.logger)
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	}
+	return this.logger
+}
