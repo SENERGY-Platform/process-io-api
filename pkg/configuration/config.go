@@ -40,7 +40,10 @@ type Config struct {
 	DatabaseSelection string `json:"database_selection"`
 
 	MongoUrl                 string `json:"mongo_url"`
-	MongoTable               string `json:"mongo_table"`
+	MongoUser                string `json:"mongo_user"`
+	MongoPassword            string `json:"mongo_password" config:"secret"`
+	MongoAuthSource          string `json:"mongo_auth_source"`
+	MongoDatabase            string `json:"mongo_database"`
 	MongoVariablesCollection string `json:"mongo_variables_collection"`
 	PostgresConnString       string `json:"postgres_conn_string"`
 
@@ -60,6 +63,36 @@ func Load(location string) (config Config, err error) {
 	}
 	handleEnvironmentVars(&config)
 	return config, nil
+}
+
+func isSecret(field reflect.StructField) bool {
+	return strings.Contains(field.Tag.Get("config"), "secret")
+}
+
+// plainConfig has none of Config's methods, so formatting it does not recurse.
+type plainConfig Config
+
+// masked returns a copy in which every non-empty field tagged config:"secret" is replaced.
+func (this Config) masked() plainConfig {
+	v := reflect.ValueOf(&this).Elem()
+	for i := 0; i < v.NumField(); i++ {
+		if isSecret(v.Type().Field(i)) && v.Field(i).Kind() == reflect.String && v.Field(i).String() != "" {
+			v.Field(i).SetString("***")
+		}
+	}
+	return plainConfig(this)
+}
+
+func (this Config) MarshalJSON() ([]byte, error) {
+	return json.Marshal(this.masked())
+}
+
+func (this Config) String() string {
+	return fmt.Sprintf("%+v", this.masked())
+}
+
+func (this Config) GoString() string {
+	return fmt.Sprintf("%#v", this.masked())
 }
 
 var camel = regexp.MustCompile("(^[^A-Z]*|[A-Z]*)([A-Z][^A-Z]+|$)")

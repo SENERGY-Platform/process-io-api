@@ -6,8 +6,11 @@
 
     "database_selection": "mongodb",
 
-    "mongo_url": "",
-    "mongo_table": "process_io",
+    "mongo_url": "mongodb://localhost:27017",
+    "mongo_user": "",
+    "mongo_password": "",
+    "mongo_auth_source": "admin",
+    "mongo_database": "process_io",
     "mongo_variables_collection": "variables",
 
     "postgres_conn_string": ""

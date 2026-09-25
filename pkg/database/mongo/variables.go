@@ -29,7 +29,7 @@ var VariableBson = getBsonFieldObject[model.VariableWithUser]()
 func init() {
 	CreateCollections = append(CreateCollections, func(db *Mongo) error {
 		var err error
-		collection := db.client.Database(db.config.MongoTable).Collection(db.config.MongoVariablesCollection)
+		collection := db.client.Database(db.config.MongoDatabase).Collection(db.config.MongoVariablesCollection)
 		err = db.ensureCompoundIndex(collection, "variables_user_key_index", true, true, VariableBson.UserId, VariableBson.Key)
 		if err != nil {
 			debug.PrintStack()
@@ -55,7 +55,7 @@ func init() {
 }
 
 func (this *Mongo) variablesCollection() *mongo.Collection {
-	return this.client.Database(this.config.MongoTable).Collection(this.config.MongoVariablesCollection)
+	return this.client.Database(this.config.MongoDatabase).Collection(this.config.MongoVariablesCollection)
 }
 
 func (this *Mongo) GetVariable(userId string, key string) (result model.VariableWithUser, err error) {

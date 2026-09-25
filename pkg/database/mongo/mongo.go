@@ -18,6 +18,8 @@ package mongo
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/SENERGY-Platform/process-io-api/pkg/configuration"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
@@ -30,10 +32,19 @@ import (
 
 var CreateCollections = []func(db *Mongo) error{}
 
+var (
+	errEmptyDatabase   = errors.New("mongo database name must not be empty")
+	errMissingPassword = errors.New("mongo password must not be empty when a mongo user is set")
+)
+
+const startupCheckTimeout = 10 * time.Second
+
 func New(ctx context.Context, wg *sync.WaitGroup, config configuration.Config) (*Mongo, error) {
-	connectCtx, _ := context.WithTimeout(ctx, 10*time.Second)
+	if err := validateConfig(config); err != nil {
+		return nil, err
+	}
 	reg := bson.NewRegistryBuilder().RegisterTypeMapEntry(bsontype.EmbeddedDocument, reflect.TypeOf(bson.M{})).Build() //ensure map marshalling to interface
-	client, err := mongo.Connect(connectCtx, options.Client().ApplyURI(config.MongoUrl), options.Client().SetRegistry(reg))
+	client, err := connect(ctx, clientOptions(config).SetRegistry(reg), config.MongoDatabase, startupCheckTimeout)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +53,7 @@ func New(ctx context.Context, wg *sync.WaitGroup, config configuration.Config) (
 	for _, creators := range CreateCollections {
 		err = creators(db)
 		if err != nil {
-			client.Disconnect(context.Background())
+			db.disconnect()
 			return nil, err
 		}
 	}
@@ -50,11 +61,55 @@ func New(ctx context.Context, wg *sync.WaitGroup, config configuration.Config) (
 	wg.Add(1)
 	go func() {
 		<-ctx.Done()
-		client.Disconnect(nil)
+		db.disconnect()
 		wg.Done()
 	}()
 
 	return db, nil
+}
+
+// connect runs listCollections on database because Connect is lazy and ping needs no
+// authentication; unreachable servers and wrong or missing credentials then fail at startup.
+func connect(ctx context.Context, opts *options.ClientOptions, database string, timeout time.Duration) (*mongo.Client, error) {
+	connectCtx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	client, err := mongo.Connect(connectCtx, opts)
+	if err != nil {
+		return nil, err
+	}
+	checkCtx, checkCancel := context.WithTimeout(ctx, timeout)
+	defer checkCancel()
+	listOpts := options.ListCollections().SetNameOnly(true).SetAuthorizedCollections(true)
+	if _, err = client.Database(database).ListCollectionNames(checkCtx, bson.D{}, listOpts); err != nil {
+		disconnectCtx, disconnectCancel := context.WithTimeout(context.Background(), timeout)
+		defer disconnectCancel()
+		_ = client.Disconnect(disconnectCtx)
+		return nil, fmt.Errorf("mongo startup check failed: %w", err)
+	}
+	return client, nil
+}
+
+func validateConfig(config configuration.Config) error {
+	if config.MongoDatabase == "" {
+		return errEmptyDatabase
+	}
+	if config.MongoUser != "" && config.MongoPassword == "" {
+		return errMissingPassword
+	}
+	return nil
+}
+
+// clientOptions applies the credentials after the URI so they replace any given in MONGO_URL.
+func clientOptions(config configuration.Config) *options.ClientOptions {
+	opts := options.Client().ApplyURI(config.MongoUrl)
+	if config.MongoUser != "" {
+		opts.SetAuth(options.Credential{
+			Username:   config.MongoUser,
+			Password:   config.MongoPassword,
+			AuthSource: config.MongoAuthSource,
+		})
+	}
+	return opts
 }
 
 func getTimeoutContext() (context.Context, context.CancelFunc) {
@@ -64,4 +119,10 @@ func getTimeoutContext() (context.Context, context.CancelFunc) {
 type Mongo struct {
 	config configuration.Config
 	client *mongo.Client
+}
+
+func (db *Mongo) disconnect() {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	_ = db.client.Disconnect(ctx)
 }
